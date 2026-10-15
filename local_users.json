@@ -1,0 +1,18 @@
+[
+  {
+    "id": "local-admin-807",
+    "name": "Kanwalpreet Singh",
+    "email": "kanwalpreetsingh807@gmail.com",
+    "passwordHash": "$2b$10$O.nHVBcHKYvvN0vqYomJOuM8SNBEuf3io0ypIw6gAc1prnYsOsrLG",
+    "isAdmin": true,
+    "createdAt": "2026-10-10T09:33:28.911Z"
+  },
+  {
+    "id": "user-1791624888378-761d2a",
+    "name": "Kanwalpreet Singh",
+    "email": "kanwalpreetsingh927@gmail.com",
+    "passwordHash": "$2b$10$lu4iKrsbeYHsKxfcpounP.6T9bVz/fdpCnNukb5DgqJ55EgmkEh9C",
+    "isAdmin": true,
+    "createdAt": "2026-10-10T09:34:48.378Z"
+  }
+]

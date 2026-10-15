@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Core CS Subject Management — PrepFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="problems.css">
+  <style>
+    .heading-block {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 18px;
+      background: #fafbfe;
+    }
+    .heading-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .heading-title-badge {
+      font-weight: 800;
+      font-size: 13px;
+      color: #3b4559;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .subheading-block {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin-top: 10px;
+    }
+    .subheading-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .subheading-header span {
+      font-size: 12px;
+      font-weight: 700;
+      color: #6345d5;
+    }
+    .btn-secondary {
+      background: #f1efff;
+      color: #5141bc;
+      border: 0;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font: 700 11px Manrope;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: #e4e0fb;
+    }
+    .btn-danger {
+      color: #b43c4c;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font: 700 11px Manrope;
+      padding: 4px;
+    }
+    .btn-danger:hover {
+      text-decoration: underline;
+    }
+    .icon-input {
+      max-width: 90px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .order-input {
+      max-width: 90px;
+    }
+    .nav-actions-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .admin-pill {
+      font: 500 10px 'DM Mono', monospace;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: #ede9fe;
+      color: #5b21b6;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <a class="brand" href="/dashboard.html"><span>P</span>prepflow</a>
+      <div class="nav-actions-bar">
+        <a href="/admin/problems.html" class="btn-secondary" style="text-decoration:none;display:inline-block;padding:9px 13px;">⚙ DSA Problems</a>
+        <button id="backToList" hidden>← All subjects</button>
+        <button class="primary" id="newSubject">+ New Subject</button>
+      </div>
+    </header>
+
+    <p class="eyebrow">INTERNAL AUTHORING</p>
+    <h1 id="pageTitle">Core CS Subject Material</h1>
+    <p class="intro" id="pageIntro">Add, update, and manage subjects, headings, modules, and learning notes for student roadmaps.</p>
+    <p id="notice" role="alert"></p>
+
+    <!-- LIST VIEW: ALL CS SUBJECTS -->
+    <section id="listView">
+      <div class="filters">
+        <input id="search" placeholder="Search subjects by name or key...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 70px;">Icon</th>
+              <th>Subject</th>
+              <th>Key</th>
+              <th>Headings / Topics</th>
+              <th style="width: 150px; text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="subjectRows">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 24px; color: #8893a6;">Loading subjects...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FORM VIEW: ADD / EDIT SUBJECT -->
+    <form id="subjectForm" hidden>
+      <section class="panel">
+        <h2>Subject Overview</h2>
+        <div class="two-col">
+          <label>Subject Name
+            <input name="name" required maxlength="120" placeholder="e.g. Operating Systems">
+          </label>
+          <label>Unique Key (slug)
+            <input name="key" required pattern="[a-z0-9_-]+" placeholder="e.g. os, networks, dbms">
+            <small>Lowercase letters, numbers, and dashes. Used in URLs & database identification.</small>
+          </label>
+        </div>
+        <div class="two-col">
+          <label>Subtitle / Tagline
+            <input name="subtitle" placeholder="e.g. Processes, threads, memory, scheduling & system calls">
+          </label>
+          <div style="display:flex;gap:12px;">
+            <label style="flex:1;">Icon (emoji or glyph)
+              <input name="icon" class="icon-input" maxlength="4" value="◫">
+            </label>
+            <label style="flex:1;">Display Order
+              <input name="order" type="number" class="order-input" value="0">
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- HEADINGS & SUBHEADINGS / TOPICS -->
+      <section class="panel">
+        <div class="section-head">
+          <div>
+            <h2>Curriculum Headings &amp; Topics</h2>
+            <p class="helper">Each subject consists of Chapters/Headings, containing specific Subheadings with markdown study notes.</p>
+          </div>
+          <button type="button" class="btn-secondary" id="addHeadingBtn">+ Add Chapter / Heading</button>
+        </div>
+
+        <div id="headingsContainer" style="margin-top: 18px;"></div>
+      </section>
+
+      <div class="form-actions">
+        <p id="formNotice" role="alert" style="margin-right:auto;font-size:12px;font-weight:700;color:#b23646;"></p>
+        <button type="button" id="cancel">Cancel</button>
+        <button class="primary" type="submit" id="saveButton">Save Subject Material</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="subjects.js"></script>
+</body>
+</html>

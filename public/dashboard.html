@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — PrepFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="roadmap-dashboard.css" />
+    <link rel="stylesheet" href="coding-platform.css" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/"><span class="brand-mark">P</span>prep<span>flow</span></a>
+
+        <!-- Section Navigation -->
+        <p class="sidebar-label">WORKSPACE</p>
+        <nav class="section-nav" aria-label="Main sections">
+          <button class="section-tab active" data-section="core-cs">
+            <span class="tab-icon">📚</span>
+            <span>Core CS Subjects</span>
+          </button>
+          <button class="section-tab" data-section="coding">
+            <span class="tab-icon">💻</span>
+            <span>Coding Platform</span>
+          </button>
+          <button class="section-tab" data-section="resume">
+            <span class="tab-icon">📄</span>
+            <span>Resume Analyser</span>
+          </button>
+        </nav>
+
+        <a class="admin-link" id="adminProblemsLink" href="/admin/problems.html" hidden>⚙ Problem Management</a>
+        <a class="admin-link" id="adminSubjectsLink" href="/admin/subjects.html" hidden>📚 Subject Material Management</a>
+        <!-- Dynamic Context Area: Roadmaps for Core CS -->
+        <div id="sidebarCoreCsSubnav">
+          <p class="sidebar-label">CORE CS ROADMAPS</p>
+          <nav class="roadmap-nav" id="roadmapNav" aria-label="Core computer science subjects"></nav>
+        </div>
+
+        <div class="sidebar-footer">
+          <button id="logoutButton">Sign out</button>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <!-- SECTION 1: CORE CS SUBJECTS -->
+        <section id="section-core-cs" class="dashboard-section active">
+          <p class="eyebrow">YOUR PREPARATION SPACE</p>
+          <h1>Welcome, <span id="userName">there</span>.</h1>
+          <p class="intro">Choose a topic from the Core CS roadmaps to build your interview foundation.</p>
+          <div id="overallProgress" class="overall-progress"></div>
+          <section class="roadmap-content" id="roadmapContent" aria-live="polite"></section>
+        </section>
+
+        <!-- SECTION 2: CODING PLATFORM (MONACO + JUDGE0) -->
+        <!-- SECTION 2: CODING PLATFORM (MONACO + JUDGE0) -->
+        <section id="section-coding" class="dashboard-section" hidden>
+          <!-- Mode Switcher: Problems Catalog vs Free-form Sandbox -->
+          <div class="coding-mode-bar">
+            <button id="modeBtnProblems" class="mode-pill active" type="button">📋 DSA Problems</button>
+            <button id="modeBtnSandbox" class="mode-pill" type="button">⚡ Code Scratchpad</button>
+          </div>
+
+          <!-- SUB-VIEW 1: PROBLEMS CATALOG (PHASE 2) -->
+          <div id="codingProblemsView">
+            <div class="coding-header">
+              <div>
+                <p class="eyebrow">CURATED INTERVIEW PRACTICE</p>
+                <h2>Coding Problems</h2>
+                <p class="coding-subtitle">Solve algorithmic challenges with in-browser execution, visible test verification, and automated judging.</p>
+              </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="problem-filters-bar">
+              <input id="catalogSearchInput" class="catalog-search-input" placeholder="Search problems by title..." />
+              <select id="catalogDiffFilter" class="catalog-select">
+                <option value="">All Difficulties</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+              <select id="catalogTopicFilter" class="catalog-select">
+                <option value="">All Topics</option>
+              </select>
+            </div>
+
+            <!-- Table of Problems -->
+            <div class="catalog-table-wrap">
+              <table class="catalog-table">
+                <thead>
+                  <tr>
+                    <th style="width:120px;">Status</th>
+                    <th>Title</th>
+                    <th style="width:120px;">Difficulty</th>
+                    <th>Topics</th>
+                    <th style="width:130px;text-align:right;"></th>
+                  </tr>
+                </thead>
+                <tbody id="catalogTableBody">
+                  <tr>
+                    <td colspan="5" style="text-align:center;padding:28px;color:#94a3b8;">Loading coding problems...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW 2: FREE-FORM SANDBOX -->
+          <div id="codingSandboxView" hidden>
+            <div class="coding-header">
+              <div>
+                <p class="eyebrow">SANDBOXED CODE EXECUTION</p>
+                <h2>Scratchpad Workspace</h2>
+                <p class="coding-subtitle">Write and execute arbitrary programs locally in C++, Java, Python, and JavaScript via Judge0 CE.</p>
+              </div>
+              <div class="coding-actions-bar">
+                <label for="languageSelect" class="lang-label">Language:
+                  <select id="languageSelect" class="coding-select">
+                    <option value="cpp">C++ (GCC 9.2.0)</option>
+                    <option value="java">Java (OpenJDK 13.0.1)</option>
+                    <option value="python">Python (3.8.1)</option>
+                    <option value="javascript">JavaScript (Node.js 12.14.0)</option>
+                  </select>
+                </label>
+                <button id="resetCodeBtn" class="btn-quiet" title="Reset to template">Reset Code</button>
+                <button id="runCodeBtn" class="btn-run">
+                  <span class="run-text">Run Code ▷</span>
+                  <span class="run-spinner" hidden></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="coding-layout">
+              <!-- Left: Monaco Code Editor -->
+              <div class="editor-pane">
+                <div class="pane-header">
+                  <span class="pane-title">Source Code</span>
+                  <span id="editorLangBadge" class="pane-badge">cpp</span>
+                </div>
+                <div id="monacoContainer" class="monaco-container"></div>
+              </div>
+
+              <!-- Right: Stdin & Execution Output -->
+              <div class="terminal-pane">
+                <div class="terminal-box stdin-box">
+                  <div class="pane-header">
+                    <span class="pane-title">Standard Input (stdin)</span>
+                    <button id="clearStdinBtn" class="pane-action-link">Clear</button>
+                  </div>
+                  <textarea id="stdinInput" class="terminal-textarea" placeholder="Enter input for your program here (e.g. 5 7)..."></textarea>
+                </div>
+
+                <div class="terminal-box stdout-box">
+                  <div class="pane-header">
+                    <span class="pane-title">Execution Result</span>
+                    <div class="status-wrap">
+                      <span id="executionStatus" class="status-pill idle">Ready</span>
+                      <span id="executionMetrics" class="metrics-pill" hidden></span>
+                    </div>
+                  </div>
+                  <div id="terminalOutput" class="terminal-output">
+                    <pre class="terminal-placeholder">Click 'Run Code' to execute your program on Judge0 CE.</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: RESUME ANALYSER -->
+        <section id="section-resume" class="dashboard-section" hidden>
+          <p class="eyebrow">CAREER READINESS</p>
+          <h2>Resume Analyser</h2>
+          <p class="intro">Scan and score your resume against target engineering roles, identify gaps, and get actionable interview recommendations.</p>
+          
+          <div class="resume-hero-card">
+            <div class="resume-icon-circle">📄</div>
+            <h3>Smart Resume Analysis Coming Soon</h3>
+            <p>Upload your resume to extract key tech stacks, evaluate alignment with interview tracks, and receive targeted question banks.</p>
+            <div class="resume-features-preview">
+              <div class="rf-card">
+                <b>Keyword Matching</b>
+                <small>ATS compliance check</small>
+              </div>
+              <div class="rf-card">
+                <b>Skill Gap Analysis</b>
+                <small>Identify missing topics</small>
+              </div>
+              <div class="rf-card">
+                <b>Interview Questions</b>
+                <small>Tailored to your past experience</small>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

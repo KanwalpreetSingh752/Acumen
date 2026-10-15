@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Problem — PrepFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/problem.css" />
+  </head>
+  <body>
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <a class="brand" href="/dashboard.html"><span class="brand-mark">P</span>prepflow</a>
+        <a class="back-link" href="/dashboard.html">← All Problems</a>
+        <div class="problem-header-badge">
+          <span id="topProblemTitle">Loading...</span>
+          <span id="topDifficultyTag" class="diff-tag">...</span>
+          <span id="topSolvedTag" class="solved-tag" hidden>✓ Solved</span>
+        </div>
+      </div>
+      <div class="nav-right">
+        <span id="userPill" class="user-pill">Student</span>
+        <button id="signOutBtn" class="btn-signout">Sign out</button>
+      </div>
+    </header>
+
+    <!-- Main Problem & Code Workspace -->
+    <main class="problem-layout">
+      <!-- Left: Problem Description & Submission History -->
+      <section class="problem-pane">
+        <nav class="pane-nav-tabs">
+          <button id="tabBtnDesc" class="pane-tab-btn active">Problem Description</button>
+          <button id="tabBtnSubs" class="pane-tab-btn">Submissions (<span id="subsCount">0</span>)</button>
+        </nav>
+
+        <div class="pane-scroll-area">
+          <!-- Tab 1: Description -->
+          <div id="descView">
+            <div class="problem-title-wrap">
+              <h1 id="problemTitle">Loading problem...</h1>
+              <div class="problem-meta-bar" id="problemMetaBar"></div>
+            </div>
+
+            <div id="problemDesc" class="markdown-body"></div>
+
+            <div id="problemExamplesSection" class="section-box" hidden>
+              <h3>Examples</h3>
+              <div id="problemExamplesList"></div>
+            </div>
+
+            <div id="problemConstraintsSection" class="section-box" hidden>
+              <h3>Constraints</h3>
+              <div id="problemConstraints" class="markdown-body"></div>
+            </div>
+
+            <div id="problemInputFormatSection" class="section-box" hidden>
+              <h3>Input Format</h3>
+              <div id="problemInputFormat" class="markdown-body"></div>
+            </div>
+
+            <div id="problemOutputFormatSection" class="section-box" hidden>
+              <h3>Output Format</h3>
+              <div id="problemOutputFormat" class="markdown-body"></div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Submissions -->
+          <div id="subsView" hidden>
+            <table class="submissions-table">
+              <thead>
+                <tr>
+                  <th>Verdict</th>
+                  <th>Language</th>
+                  <th>Time</th>
+                  <th>Memory</th>
+                  <th>Submitted</th>
+                </tr>
+              </thead>
+              <tbody id="submissionsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center;color:#94a3b8;padding:24px;">No submissions yet. Write your code and click Submit.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Monaco Editor & Output Tray -->
+      <section class="editor-pane">
+        <!-- Toolbar -->
+        <div class="editor-toolbar">
+          <div class="toolbar-left">
+            <label for="langSelect" style="color:#a1a1aa;font:600 12px var(--font-sans);">Language:</label>
+            <select id="langSelect" class="lang-select">
+              <option value="cpp">C++ (GCC 9.2.0)</option>
+              <option value="java">Java (OpenJDK 13.0.1)</option>
+              <option value="python">Python (3.8.1)</option>
+              <option value="javascript">JavaScript (Node.js 12.14.0)</option>
+            </select>
+            <button id="resetBtn" class="btn-editor-quiet" title="Reset starter code">Reset Code</button>
+          </div>
+          <div class="toolbar-right">
+            <button id="runBtn" class="btn-run-code">
+              <span class="btn-text">Run Code ▷</span>
+              <span class="mini-spinner" hidden></span>
+            </button>
+            <button id="submitBtn" class="btn-submit-code">
+              <span class="btn-text">Submit</span>
+              <span class="mini-spinner" hidden></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Monaco Container -->
+        <div id="monacoContainer" class="editor-container"></div>
+
+        <!-- Results Tray -->
+        <div class="results-tray">
+          <div class="tray-header">
+            <div class="tray-tabs">
+              <button id="trayTabTest" class="tray-tab-btn active">Test Results</button>
+              <button id="trayTabSubmit" class="tray-tab-btn">Submission Result</button>
+            </div>
+            <span id="trayStatusBadge" style="font:600 11px var(--font-mono);color:#94a3b8;">Ready</span>
+          </div>
+
+          <div class="tray-content">
+            <!-- Test Results View (Visible Tests) -->
+            <div id="trayTestResultsView">
+              <div id="caseSelectorBar" class="case-selector-bar"></div>
+              <div id="caseDetailBox" class="case-detail-grid">
+                <p style="color:#71717a;font-size:13px;margin:12px 0;">Click 'Run Code' to execute against visible test cases.</p>
+              </div>
+            </div>
+
+            <!-- Submission Result View (Hidden Tests) -->
+            <div id="traySubmitResultView" hidden>
+              <p style="color:#71717a;font-size:13px;margin:12px 0;">Click 'Submit' to evaluate your solution against hidden test cases.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for viewing historical submission details -->
+    <div id="submissionModal" class="modal-backdrop" hidden>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modalTitle">Submission Details</h3>
+          <button id="modalCloseBtn" class="modal-close">×</button>
+        </div>
+        <div class="modal-body">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <span id="modalVerdict" class="verdict-badge"></span>
+            <span id="modalMeta" style="color:#a1a1aa;font-size:13px;"></span>
+          </div>
+          <label style="font:600 11px var(--font-mono);color:#94a3b8;display:block;margin-bottom:6px;">SUBMITTED CODE (READ-ONLY)</label>
+          <pre id="modalCodeView" class="modal-code-view"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    <script src="/problem.js"></script>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="PrepFlow turns interview preparation into a focused, personalized plan." />
+    <title>PrepFlow — Prepare with clarity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="auth.css" />
+  </head>
+  <body>
+    <main>
+      <nav class="nav wrap" aria-label="Main navigation">
+        <a class="brand" href="#top"><span class="brand-mark">P</span>prep<span>flow</span></a>
+        <div class="nav-links"><a href="#product">Product</a><a href="#how-it-works">How it works</a><a href="#features">Features</a></div>
+        <div class="nav-actions"><button class="login-link" data-auth="login">Sign in</button><button class="nav-cta" data-auth="register">Get started <span>→</span></button></div>
+      </nav>
+      <section class="hero wrap" id="top">
+        <div class="hero-copy">
+          <p class="eyebrow"><i></i> INTERVIEW PREP, REIMAGINED</p>
+          <h1>Know exactly what to prepare for.</h1>
+          <p class="hero-text">PrepFlow creates a focused learning plan around your role, experience, and interview timeline—so every study session moves you forward.</p>
+          <div class="hero-actions"><button class="button button-primary" data-auth="register">Build your plan <span>→</span></button><a class="button button-quiet" href="#product">See how it works <span>↓</span></a></div>
+          <div class="trust"><div class="avatars"><b>AS</b><b>MK</b><b>JP</b><b>+</b></div><p>Built for people preparing for their next big opportunity.</p></div>
+        </div>
+        <div class="product-preview" id="product" aria-label="Preview of the PrepFlow study planner">
+          <div class="preview-top"><span class="tiny-logo">P</span><span>Your preparation plan</span><b>⋯</b></div>
+          <div class="preview-body">
+            <p class="preview-label">THIS WEEK</p><h2>JavaScript foundations</h2><p class="preview-subtitle">A balanced path from concepts to interview confidence.</p>
+            <div class="plan-progress"><div><span>Week progress</span><strong>3 / 5 sessions</strong></div><div class="bar"><i></i></div></div>
+            <div class="session current"><span class="session-number">01</span><div><small>TODAY · 45 MIN</small><b>Closures & the event loop</b></div><em>Start →</em></div>
+            <div class="session"><span class="session-number">02</span><div><small>UP NEXT · 40 MIN</small><b>Async patterns in practice</b></div><em>→</em></div>
+            <div class="session"><span class="session-number">03</span><div><small>FRIDAY · 50 MIN</small><b>JavaScript interview drills</b></div><em>→</em></div>
+          </div>
+        </div>
+      </section>
+      <section class="logos"><div class="wrap"><p>ONE PLACE FOR THE PREP THAT MATTERS</p><div><span>Technical foundations</span><span>Interview practice</span><span>Role-ready skills</span><span>Steady progress</span></div></div></section>
+      <section class="benefit wrap" id="how-it-works"><div><p class="eyebrow">A CLEARER WAY TO PREPARE</p><h2>From a long list of topics to a plan you can follow.</h2></div><p>Tell PrepFlow where you are and where you want to go. It turns the noise of interview preparation into a practical path with the right concepts, practice, and pacing.</p></section>
+      <section class="feature-grid wrap" id="features">
+        <article><span class="feature-icon violet">✦</span><h3>A plan that fits you</h3><p>Get a structured path shaped around your target role, current skills, and available time.</p></article>
+        <article><span class="feature-icon gold">⌘</span><h3>Practice with purpose</h3><p>Move from core concepts to realistic questions without wondering what to study next.</p></article>
+        <article><span class="feature-icon blue">↗</span><h3>Progress you can feel</h3><p>See your momentum at a glance and keep every small session connected to your goal.</p></article>
+      </section>
+      <section class="final-cta wrap" id="get-started"><p class="eyebrow">START WITH A BETTER PLAN</p><h2>Your next interview deserves more than guesswork.</h2><p>Build a preparation routine that is focused, flexible, and made for the role you want.</p><button class="button button-primary" data-auth="register">Create your account <span>→</span></button></section>
+    </main>
+    <footer class="footer wrap"><a class="brand" href="#top"><span class="brand-mark">P</span>prep<span>flow</span></a><p>Prepare with clarity.</p><p>© 2026 PrepFlow</p></footer>
+    <div class="auth-backdrop" id="authModal" hidden>
+      <section class="auth-modal" aria-labelledby="authTitle" role="dialog" aria-modal="true"><button class="close-auth" aria-label="Close">×</button><p class="eyebrow" id="authEyebrow">WELCOME TO PREPFLOW</p><h2 id="authTitle">Create your account</h2><p class="auth-copy" id="authCopy">Start building a focused interview preparation plan.</p>
+        <form id="authForm"><label class="name-field">Name<input name="name" autocomplete="name" required minlength="2" maxlength="80" placeholder="Your name" /></label><label>Email<input name="email" type="email" autocomplete="email" required placeholder="you@example.com" /></label><label>Password<input name="password" type="password" autocomplete="new-password" required minlength="8" placeholder="At least 8 characters" /></label><p class="form-error" id="formError" role="alert"></p><button class="button button-primary" type="submit" id="authSubmit">Create account <span>→</span></button></form>
+        <p class="auth-switch" id="authSwitch">Already have an account? <button data-auth="login">Sign in</button></p>
+      </section>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>

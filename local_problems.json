@@ -1,0 +1,76 @@
+[
+  {
+    "id": "prob-two-sum",
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "difficulty": "Easy",
+    "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.",
+    "constraints": "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9",
+    "input_format": "First line contains element count N and target integer.\nSecond line contains N space-separated integers.",
+    "output_format": "Print the 0-indexed indices of the two numbers separated by a space.",
+    "created_at": "2026-10-10T09:36:13.078Z",
+    "updated_at": "2026-10-10T09:36:13.080Z",
+    "topic_ids": [
+      "topic-arrays",
+      "topic-hash-table"
+    ],
+    "topics": [
+      {
+        "id": "topic-arrays",
+        "name": "Arrays"
+      },
+      {
+        "id": "topic-hash-table",
+        "name": "Hash Table"
+      }
+    ],
+    "examples": [
+      {
+        "input": "4 9\n2 7 11 15",
+        "output": "0 1",
+        "explanation": "Because nums[0] + nums[1] == 9, we return 0 1."
+      }
+    ],
+    "test_cases": [
+      {
+        "id": "tc-1",
+        "input": "4 9\n2 7 11 15",
+        "expected_output": "0 1",
+        "is_hidden": false,
+        "display_order": 0
+      },
+      {
+        "id": "tc-2",
+        "input": "3 6\n3 2 4",
+        "expected_output": "1 2",
+        "is_hidden": false,
+        "display_order": 1
+      },
+      {
+        "id": "tc-3",
+        "input": "2 6\n3 3",
+        "expected_output": "0 1",
+        "is_hidden": true,
+        "display_order": 2
+      }
+    ],
+    "starter_code": [
+      {
+        "language": "cpp",
+        "code": "#include <iostream>\n#include <vector>\n#include <unordered_map>\nusing namespace std;\n\nint main() {\n    int n, target;\n    if (cin >> n >> target) {\n        vector<int> nums(n);\n        for (int i = 0; i < n; i++) cin >> nums[i];\n        unordered_map<int, int> mp;\n        for (int i = 0; i < n; i++) {\n            int diff = target - nums[i];\n            if (mp.count(diff)) {\n                cout << mp[diff] << \" \" << i << endl;\n                return 0;\n            }\n            mp[nums[i]] = i;\n        }\n    }\n    return 0;\n}"
+      },
+      {
+        "language": "python",
+        "code": "import sys\n\ndef main():\n    data = sys.stdin.read().split()\n    if not data: return\n    n = int(data[0])\n    target = int(data[1])\n    nums = [int(x) for x in data[2:2+n]]\n    mp = {}\n    for i, num in enumerate(nums):\n        diff = target - num\n        if diff in mp:\n            print(f\"{mp[diff]} {i}\")\n            return\n        mp[num] = i\n\nif __name__ == '__main__':\n    main()"
+      },
+      {
+        "language": "java",
+        "code": "import java.util.Scanner;\nimport java.util.HashMap;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextInt()) {\n            int n = sc.nextInt();\n            int target = sc.nextInt();\n            int[] nums = new int[n];\n            for (int i = 0; i < n; i++) nums[i] = sc.nextInt();\n            HashMap<Integer, Integer> map = new HashMap<>();\n            for (int i = 0; i < n; i++) {\n                int diff = target - nums[i];\n                if (map.containsKey(diff)) {\n                    System.out.println(map.get(diff) + \" \" + i);\n                    return;\n                }\n                map.put(nums[i], i);\n            }\n        }\n    }\n}"
+      },
+      {
+        "language": "javascript",
+        "code": "const fs = require('fs');\n\nfunction main() {\n    const data = fs.readFileSync(0, 'utf-8').trim().split(/\\s+/);\n    if (data.length < 2) return;\n    const n = Number(data[0]);\n    const target = Number(data[1]);\n    const nums = data.slice(2, 2 + n).map(Number);\n    const map = new Map();\n    for (let i = 0; i < nums.length; i++) {\n        const diff = target - nums[i];\n        if (map.has(diff)) {\n            console.log(`${map.get(diff)} ${i}`);\n            return;\n        }\n        map.set(nums[i], i);\n    }\n}\nmain();"
+      }
+    ]
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "name": "prepflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "seed": "node scripts/run-migration.js",
+    "test:code": "node scripts/test-code-execution.js",
+    "test:phase2": "node scripts/test-phase2-e2e.js",
+    "grant:problem-admin": "node scripts/grant-problem-admin.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.4",
+    "express": "^5.1.0",
+    "jsdom": "^30.1.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.2",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  }
+}
