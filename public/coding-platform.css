@@ -26,14 +26,14 @@
 }
 
 .section-tab:hover {
-  background: #fff7ed;
-  color: #c25e2e;
+  background: #fdf5f0;
+  color: #C66A35;
 }
 
 .section-tab.active {
-  background: #c25e2e;
+  background: #C66A35;
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(194, 94, 46, 0.28);
+  box-shadow: 0 4px 12px rgba(198, 106, 53, 0.28);
 }
 
 .section-tab .tab-icon {
@@ -98,7 +98,7 @@
 }
 
 .coding-select:focus {
-  border-color: #6247ce;
+  border-color: #C66A35;
 }
 
 .btn-quiet {
@@ -167,11 +167,11 @@
 .editor-pane, .terminal-pane {
   display: flex;
   flex-direction: column;
-  border: 1px solid #e1e4ed;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
-  background: #ffffff;
+  background: #FCFCFA;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(18, 24, 38, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .pane-header {
@@ -179,8 +179,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
-  background: #f8f9fc;
-  border-bottom: 1px solid #e6e9f2;
+  background: #F7F7F4;
+  border-bottom: 1px solid #dedfd8;
 }
 
 .pane-title {
@@ -193,8 +193,8 @@
 .pane-badge {
   font: 600 10px 'DM Mono', monospace;
   padding: 2px 8px;
-  background: #eae8fb;
-  color: #6247ce;
+  background: #f0f1eb;
+  color: #5a6072;
   border-radius: 4px;
   text-transform: uppercase;
 }
@@ -216,6 +216,7 @@
   flex: 1;
   min-height: 380px;
   width: 100%;
+  background: #FCFCFA;
 }
 
 .terminal-pane {
@@ -230,11 +231,11 @@
 .terminal-box {
   display: flex;
   flex-direction: column;
-  border: 1px solid #e1e4ed;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
-  background: #ffffff;
+  background: #FCFCFA;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(18, 24, 38, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .terminal-box.stdin-box {
@@ -249,7 +250,7 @@
   font: 400 12px 'Fira Code', 'DM Mono', monospace;
   color: #1e293b;
   resize: none;
-  background: #fafbfe;
+  background: #FCFCFA;
 }
 
 .status-wrap {
@@ -302,16 +303,17 @@
 .terminal-output {
   flex: 1;
   padding: 14px;
-  background: #181d28;
-  color: #f1f5f9;
+  background: #F0F1EC;
+  color: #111111;
   font: 400 12px/1.6 'Fira Code', 'DM Mono', monospace;
   overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-all;
+  border-top: 1px solid #e1e4ed;
 }
 
 .terminal-placeholder {
-  color: #64748b;
+  color: #888888;
   margin: 0;
   font-family: inherit;
 }
@@ -323,7 +325,7 @@
 .output-section-title {
   font-size: 11px;
   font-weight: 700;
-  color: #94a3b8;
+  color: #777777;
   margin-bottom: 4px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -331,11 +333,11 @@
 
 .output-section.stderr .output-text,
 .output-section.compile .output-text {
-  color: #f87171;
+  color: #dc2626;
 }
 
 .output-section.stdout .output-text {
-  color: #4ade80;
+  color: #15803d;
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -345,8 +347,8 @@
   margin-top: 32px;
   padding: 48px 36px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #f7f6fe 0%, #edf1fd 100%);
-  border: 1px solid #e3e0f7;
+  background: #ffffff;
+  border: 1px solid #e2e4dc;
   text-align: center;
   max-width: 720px;
 }
@@ -367,7 +369,7 @@
   font-size: 22px;
   letter-spacing: -0.6px;
   margin: 0 0 8px;
-  color: #172030;
+  color: #111111;
 }
 
 .resume-hero-card p {
@@ -433,14 +435,14 @@
 }
 
 .mode-pill:hover {
-  background: #ffedd5;
-  color: #9a3412;
+  background: #fde8d8;
+  color: #7a3812;
 }
 
 .mode-pill.active {
-  background: #c25e2e;
+  background: #C66A35;
   color: #ffffff;
-  box-shadow: 0 3px 10px rgba(194, 94, 46, 0.28);
+  box-shadow: 0 3px 10px rgba(198, 106, 53, 0.28);
 }
 
 .problem-filters-bar {
@@ -465,7 +467,7 @@
 }
 
 .catalog-search-input:focus {
-  border-color: #c25e2e;
+  border-color: #C66A35;
 }
 
 .catalog-select {
@@ -481,15 +483,15 @@
 }
 
 .catalog-select:focus {
-  border-color: #c25e2e;
+  border-color: #C66A35;
 }
 
 .catalog-table-wrap {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: #F0F1EC;
+  border: 1px solid #dedfd8;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(18, 24, 38, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .catalog-table {
@@ -501,24 +503,24 @@
 .catalog-table th {
   text-align: left;
   padding: 12px 16px;
-  background: #f9fafb;
+  background: #e6e8df;
   color: #6b7280;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #dedfd8;
 }
 
 .catalog-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #e6e8df;
   color: #374151;
   vertical-align: middle;
 }
 
 .catalog-table tr:hover td {
-  background: #fff7ed;
+  background: #e6e8df;
 }
 
 .problem-title-cell {
@@ -529,7 +531,7 @@
 }
 
 .problem-title-cell:hover {
-  color: #c25e2e;
+  color: #C66A35;
 }
 
 .diff-badge {
@@ -560,7 +562,7 @@
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #f3f4f6;
+  background: #f0f1ec;
   color: #4b5563;
   font-size: 12px;
   font-weight: 500;
@@ -573,7 +575,7 @@
   gap: 4px;
   padding: 6px 14px;
   border-radius: 6px;
-  background: #c25e2e;
+  background: #C66A35;
   color: #ffffff;
   font: 700 12px var(--font-sans);
   text-decoration: none;
@@ -581,7 +583,7 @@
 }
 
 .btn-solve-action:hover {
-  background: #a84c20;
+  background: #a8541f;
   transform: translateY(-1px);
 }
 

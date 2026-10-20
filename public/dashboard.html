@@ -6,77 +6,366 @@
     <title>Dashboard — PrepFlow</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="dashboard.css" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="mindrift-dashboard.css" />
     <link rel="stylesheet" href="roadmap-dashboard.css" />
     <link rel="stylesheet" href="coding-platform.css" />
   </head>
   <body>
     <div class="dashboard-shell">
+      <!-- ── Left Sidebar (Mindrift Layout) ── -->
       <aside class="sidebar">
-        <a class="brand" href="/"><span class="brand-mark">P</span>prep<span>flow</span></a>
+        <div class="sidebar-header">
+          <a class="brand" href="/">
+            <span class="brand-mark">P</span>
+            <span>prep<span>flow</span></span>
+            <span class="brand-sub">™</span>
+          </a>
+          <button class="btn-sidebar-toggle" title="Toggle sidebar" aria-label="Toggle sidebar">⊞</button>
+        </div>
 
-        <!-- Section Navigation -->
-        <p class="sidebar-label">WORKSPACE</p>
-        <nav class="section-nav" aria-label="Main sections">
-          <button class="section-tab active" data-section="core-cs">
-            <span class="tab-icon">📚</span>
-            <span>Core CS Subjects</span>
+        <!-- Section: General -->
+        <p class="sidebar-group-title">GENERAL</p>
+        <nav class="sidebar-nav">
+          <button class="sidebar-nav-item active section-tab" data-section="overview">
+            <span class="nav-icon">⌂</span>
+            <span>Dashboard</span>
           </button>
-          <button class="section-tab" data-section="coding">
-            <span class="tab-icon">💻</span>
-            <span>Coding Platform</span>
+          <button class="sidebar-nav-item section-tab" data-section="core-cs">
+            <span class="nav-icon">▤</span>
+            <span>Course Library</span>
           </button>
-          <button class="section-tab" data-section="resume">
-            <span class="tab-icon">📄</span>
-            <span>Resume Analyser</span>
+          <button class="sidebar-nav-item section-tab" data-section="coding">
+            <span class="nav-icon">💻</span>
+            <span>Coding Practice</span>
           </button>
+          <a class="sidebar-nav-item" href="/core-subjects.html">
+            <span class="nav-icon">✦</span>
+            <span>Study Room</span>
+            <span class="nav-badge">New</span>
+          </a>
+          <a class="sidebar-nav-item" href="/dsa.html">
+            <span class="nav-icon">✎</span>
+            <span>DSA Tracks</span>
+          </a>
         </nav>
 
-        <a class="admin-link" id="adminProblemsLink" href="/admin/problems.html" hidden>⚙ Problem Management</a>
-        <a class="admin-link" id="adminSubjectsLink" href="/admin/subjects.html" hidden>📚 Subject Material Management</a>
+        <!-- Section: Learning Tools -->
+        <p class="sidebar-group-title">LEARNING TOOLS</p>
+        <nav class="sidebar-nav">
+          <button class="sidebar-nav-item section-tab" data-section="resume">
+            <span class="nav-icon">📄</span>
+            <span>Resume Analyser</span>
+          </button>
+          <div class="sidebar-nav-item" style="cursor:default;">
+            <span class="nav-icon">◉</span>
+            <span>Live Sessions</span>
+            <span class="nav-counter">15</span>
+          </div>
+          <div class="sidebar-nav-item" style="cursor:default;padding-left:36px;font-size:12.5px;color:var(--ink-muted);">
+            <span>Ongoing</span>
+            <span class="nav-counter">8</span>
+          </div>
+          <div class="sidebar-nav-item" style="cursor:default;padding-left:36px;font-size:12.5px;color:var(--ink-muted);">
+            <span>Recorded</span>
+            <span class="nav-counter">4</span>
+          </div>
+        </nav>
+
+        <!-- Section: Settings & Admin -->
+        <p class="sidebar-group-title">SETTINGS & SUPPORT</p>
+        <nav class="sidebar-nav">
+          <a class="sidebar-nav-item admin-link" id="adminProblemsLink" href="/admin/problems.html" hidden>
+            <span class="nav-icon">⚙</span>
+            <span>Problem Admin</span>
+          </a>
+          <a class="sidebar-nav-item admin-link" id="adminSubjectsLink" href="/admin/subjects.html" hidden>
+            <span class="nav-icon">📚</span>
+            <span>Subject Admin</span>
+          </a>
+          <a class="sidebar-nav-item" href="/index.html">
+            <span class="nav-icon">🏠</span>
+            <span>Landing Page</span>
+          </a>
+        </nav>
+
         <!-- Dynamic Context Area: Roadmaps for Core CS -->
-        <div id="sidebarCoreCsSubnav">
-          <p class="sidebar-label">CORE CS ROADMAPS</p>
+        <div id="sidebarCoreCsSubnav" style="display:none;margin-top:16px;">
+          <p class="sidebar-group-title">CORE CS TOPICS</p>
           <nav class="roadmap-nav" id="roadmapNav" aria-label="Core computer science subjects"></nav>
         </div>
 
+        <!-- Sidebar Footer -->
         <div class="sidebar-footer">
-          <button id="logoutButton">Sign out</button>
+          <div class="user-card">
+            <div class="user-avatar" id="userAvatarText">ST</div>
+            <div class="user-info">
+              <div class="user-name" id="userNameText">Student Account</div>
+              <div class="user-role">Self-paced Plan</div>
+            </div>
+          </div>
+          <button class="btn-signout" id="logoutButton">Sign out →</button>
         </div>
       </aside>
 
+      <!-- ── Main Dashboard Content ── -->
       <main class="dashboard-main">
-        <!-- SECTION 1: CORE CS SUBJECTS -->
-        <section id="section-core-cs" class="dashboard-section active">
-          <p class="eyebrow">YOUR PREPARATION SPACE</p>
-          <h1>Welcome, <span id="userName">there</span>.</h1>
-          <p class="intro">Choose a topic from the Core CS roadmaps to build your interview foundation.</p>
-          <div id="overallProgress" class="overall-progress"></div>
+
+        <!-- ════════════════════════════════════════════════════════
+             SECTION 0: MINDRIFT-STYLE ANALYTICS OVERVIEW (NEW DEFAULT)
+             ════════════════════════════════════════════════════════ -->
+        <section id="section-overview" class="dashboard-section active">
+          <!-- Welcome Bar -->
+          <div class="dashboard-header">
+            <p class="header-welcome">Welcome back!</p>
+            <h1 class="header-date" id="currentHeaderDate">Thu, Feb 26</h1>
+          </div>
+
+          <!-- Top 3 Metrics Row -->
+          <div class="metrics-row">
+            
+            <!-- Card 1: Completed Topics & Problems -->
+            <div class="metric-card">
+              <div class="metric-top">
+                <span class="metric-pill-indicator indicator-accent"></span>
+                <span class="metric-title">Learning streak</span>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-big-num" id="metricStreakVal">0</span>
+                <span class="metric-sub-tag positive" id="metricStreakTag">0 days streak</span>
+              </div>
+              <div class="metric-stats-breakdown">
+                <div class="sub-stat-item">
+                  <span class="sub-stat-label">Longest streak</span>
+                  <span class="sub-stat-val" id="metricLongestStreak">0 days</span>
+                </div>
+                <div class="sub-stat-item">
+                  <span class="sub-stat-label">Active days</span>
+                  <span class="sub-stat-val" id="metricActiveDays">0 days</span>
+                </div>
+                <div class="sub-stat-item">
+                  <span class="sub-stat-label">Total actions</span>
+                  <span class="sub-stat-val" id="metricTotalActions">0</span>
+                </div>
+              </div>
+              <!-- Micro Bar Chart -->
+              <div class="micro-bar-strip" id="streakMicroBars"></div>
+              <div class="metric-card-footer">
+                <a href="#section-core-cs" class="view-all-link" onclick="switchSection('core-cs')">View all details →</a>
+              </div>
+            </div>
+
+            <!-- Card 2: Course Progress -->
+            <div class="metric-card">
+              <div class="metric-top">
+                <span class="metric-pill-indicator indicator-amber"></span>
+                <span class="metric-title">Course progress</span>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-big-num" id="metricProgressVal">0%</span>
+                <span class="metric-sub-tag positive" id="metricProgressTag">0 lessons completed</span>
+              </div>
+              <div class="metric-stats-breakdown">
+                <div class="sub-stat-item">
+                  <span class="sub-stat-label">Lessons Studied</span>
+                  <span class="sub-stat-val" id="metricLessonsDone">0</span>
+                </div>
+                <div class="sub-stat-item">
+                  <span class="sub-stat-label">Total Curriculum</span>
+                  <span class="sub-stat-val" id="metricLessonsTotal">0</span>
+                </div>
+              </div>
+              <!-- Micro Dotted Bar Chart -->
+              <div class="micro-bar-strip" id="courseMicroBars"></div>
+              <div class="metric-card-footer">
+                <a href="#section-core-cs" class="view-all-link" onclick="switchSection('core-cs')">View all details →</a>
+              </div>
+            </div>
+
+            <!-- Card 3: Coding Submissions & Practice -->
+            <div class="metric-card">
+              <div class="metric-top">
+                <span class="metric-pill-indicator indicator-blue"></span>
+                <span class="metric-title">Coding Practice</span>
+              </div>
+              <div class="metric-value-row">
+                <span class="metric-big-num" id="metricProblemsSolved">0</span>
+                <span class="metric-sub-tag positive" id="metricSolvedTag">problems solved</span>
+              </div>
+              <!-- Category Breakdown -->
+              <div class="category-dots-list">
+                <div class="cat-dot-row">
+                  <span class="cat-dot" style="background:#2563eb;"></span>
+                  <span id="metricAcceptedSubs">0 Accepted submissions</span>
+                </div>
+                <div class="cat-dot-row">
+                  <span class="cat-dot" style="background:var(--accent);"></span>
+                  <span id="metricTotalSubs">0 Total evaluations</span>
+                </div>
+                <div class="cat-dot-row">
+                  <span class="cat-dot" style="background:#d97706;"></span>
+                  <span id="metricAccRate">0% Accuracy rate</span>
+                </div>
+              </div>
+              <div class="micro-bar-strip" id="studyMicroBars"></div>
+              <div class="metric-card-footer">
+                <a href="#section-coding" class="view-all-link" onclick="switchSection('coding')">Practice coding →</a>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Heatmap Activity Timeline -->
+          <div class="timeline-card">
+            <div class="timeline-top">
+              <h2 class="timeline-title">Your progress timeline</h2>
+              <button class="btn-filter" style="display:none;"><span>⚙</span> Filter</button>
+            </div>
+            <!-- Month Headers Jan - Dec -->
+            <div class="heatmap-month-labels">
+              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span>
+              <span>May</span><span>Jun</span><span>Jul</span><span>Aug</span>
+              <span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+            </div>
+            <!-- Matrix of 52 columns x 7 days -->
+            <div class="heatmap-matrix" id="heatmapGrid"></div>
+            <!-- Bottom Legend -->
+            <div class="timeline-bottom-meta">
+              <span class="meta-item">✔ <strong id="timelineActiveDaysCount">0</strong> Active Days</span>
+              <span class="meta-item">🗓 Active Period: <strong id="timelineActivePeriod">Current Year</strong></span>
+            </div>
+          </div>
+
+          <!-- Bottom 3-Card Row -->
+          <div class="bottom-widgets-grid">
+            
+            <!-- Widget 1: Weekly streak -->
+            <div class="widget-card">
+              <div class="widget-header">
+                <div class="widget-title-wrap">
+                  <span>🔥</span>
+                  <h3 class="widget-title">Weekly streak</h3>
+                </div>
+                <button class="widget-more-btn">···</button>
+              </div>
+              <div class="streak-big-val">5 days</div>
+              <div class="week-bubbles-row">
+                <div class="day-bubble-col">
+                  <span class="day-label">Mon</span>
+                  <div class="day-check-circle checked">✓</div>
+                </div>
+                <div class="day-bubble-col">
+                  <span class="day-label">Tue</span>
+                  <div class="day-check-circle checked">✓</div>
+                </div>
+                <div class="day-bubble-col">
+                  <span class="day-label">Wed</span>
+                  <div class="day-check-circle checked">✓</div>
+                </div>
+                <div class="day-bubble-col">
+                  <span class="day-label">Thu</span>
+                  <div class="day-check-circle checked">✓</div>
+                </div>
+                <div class="day-bubble-col">
+                  <span class="day-label">Fri</span>
+                  <div class="day-check-circle"></div>
+                </div>
+                <div class="day-bubble-col">
+                  <span class="day-label">Sat</span>
+                  <div class="day-check-circle"></div>
+                </div>
+                <div class="day-bubble-col">
+                  <span class="day-label">Sun</span>
+                  <div class="day-check-circle"></div>
+                </div>
+              </div>
+              <div class="streak-footnote">
+                <span>🔥 4 day streak</span>
+                <span>↑ Best: 21 days</span>
+              </div>
+            </div>
+
+            <!-- Widget 2: Learning progress -->
+            <div class="widget-card">
+              <div class="widget-header">
+                <div class="widget-title-wrap">
+                  <span>✦</span>
+                  <h3 class="widget-title">Learning progress</h3>
+                </div>
+                <button class="widget-more-btn">···</button>
+              </div>
+              <div class="course-list" id="widgetLearningProgressList"></div>
+            </div>
+
+            <!-- Widget 3: Skill breakdown Radar -->
+            <div class="widget-card">
+              <div class="widget-header">
+                <div class="widget-title-wrap">
+                  <span>🕸</span>
+                  <h3 class="widget-title">Skill breakdown</h3>
+                </div>
+                <button class="widget-more-btn">···</button>
+              </div>
+              <div class="radar-wrap">
+                <svg viewBox="0 0 200 200" class="radar-svg">
+                  <!-- Radar Polygons -->
+                  <polygon points="100,20 180,75 150,165 50,165 20,75" fill="none" stroke="#dedfd8" stroke-width="1"/>
+                  <polygon points="100,50 150,85 130,145 70,145 50,85" fill="none" stroke="#dedfd8" stroke-width="1"/>
+                  <polygon points="100,75 125,92 115,122 85,122 75,92" fill="none" stroke="#dedfd8" stroke-width="1"/>
+                  
+                  <!-- Dynamic Area Polygon -->
+                  <polygon points="100,32 165,80 135,150 60,140 38,78" fill="rgba(198, 106, 53, 0.25)" stroke="var(--accent)" stroke-width="1.8"/>
+                  
+                  <!-- Axis Labels -->
+                  <text x="100" y="14" text-anchor="middle" font-size="8.5" fill="#777770" font-family="'DM Mono', monospace">Algorithms</text>
+                  <text x="185" y="78" text-anchor="start" font-size="8.5" fill="#777770" font-family="'DM Mono', monospace">OS / Systems</text>
+                  <text x="155" y="178" text-anchor="middle" font-size="8.5" fill="#777770" font-family="'DM Mono', monospace">Networks</text>
+                  <text x="45" y="178" text-anchor="middle" font-size="8.5" fill="#777770" font-family="'DM Mono', monospace">Databases</text>
+                  <text x="12" y="78" text-anchor="end" font-size="8.5" fill="#777770" font-family="'DM Mono', monospace">Design</text>
+                </svg>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════
+             SECTION 1: CORE CS SUBJECTS (STUDY CURRICULUM)
+             ════════════════════════════════════════════════════════ -->
+        <section id="section-core-cs" class="dashboard-section" hidden>
+          <div style="margin-bottom:24px;">
+            <p class="header-welcome">• Self-paced Learning · Deep Conceptual Foundations</p>
+            <h1 class="header-date" style="font-size:34px;">Core CS Library</h1>
+            <p style="max-width:580px;font-size:14.5px;color:var(--ink-secondary);line-height:1.6;margin:8px 0 0;">
+              Master fundamental computer systems, networks, databases, and architectures with structured conceptual reading.
+            </p>
+          </div>
+          <div id="overallProgress" class="overall-progress" style="margin-bottom:20px;"></div>
           <section class="roadmap-content" id="roadmapContent" aria-live="polite"></section>
         </section>
 
-        <!-- SECTION 2: CODING PLATFORM (MONACO + JUDGE0) -->
-        <!-- SECTION 2: CODING PLATFORM (MONACO + JUDGE0) -->
+        <!-- ════════════════════════════════════════════════════════
+             SECTION 2: CODING PLATFORM (MONACO + JUDGE0)
+             ════════════════════════════════════════════════════════ -->
         <section id="section-coding" class="dashboard-section" hidden>
           <!-- Mode Switcher: Problems Catalog vs Free-form Sandbox -->
-          <div class="coding-mode-bar">
+          <div class="coding-mode-bar" style="margin-bottom:24px;">
             <button id="modeBtnProblems" class="mode-pill active" type="button">📋 DSA Problems</button>
             <button id="modeBtnSandbox" class="mode-pill" type="button">⚡ Code Scratchpad</button>
           </div>
 
-          <!-- SUB-VIEW 1: PROBLEMS CATALOG (PHASE 2) -->
+          <!-- SUB-VIEW 1: PROBLEMS CATALOG -->
           <div id="codingProblemsView">
-            <div class="coding-header">
+            <div class="coding-header" style="margin-bottom:20px;">
               <div>
-                <p class="eyebrow">CURATED INTERVIEW PRACTICE</p>
-                <h2>Coding Problems</h2>
-                <p class="coding-subtitle">Solve algorithmic challenges with in-browser execution, visible test verification, and automated judging.</p>
+                <p class="header-welcome">CURATED INTERVIEW PRACTICE</p>
+                <h2 style="font-family:'Newsreader', Georgia, serif;font-size:28px;font-weight:500;margin:4px 0 8px;">Coding Problems</h2>
+                <p class="coding-subtitle" style="font-size:14px;color:var(--ink-secondary);">Solve algorithmic challenges with in-browser execution, visible test verification, and automated judging.</p>
               </div>
             </div>
 
             <!-- Search & Filters -->
-            <div class="problem-filters-bar">
+            <div class="problem-filters-bar" style="margin-bottom:18px;">
               <input id="catalogSearchInput" class="catalog-search-input" placeholder="Search problems by title..." />
               <select id="catalogDiffFilter" class="catalog-select">
                 <option value="">All Difficulties</option>
@@ -114,8 +403,8 @@
           <div id="codingSandboxView" hidden>
             <div class="coding-header">
               <div>
-                <p class="eyebrow">SANDBOXED CODE EXECUTION</p>
-                <h2>Scratchpad Workspace</h2>
+                <p class="header-welcome">SANDBOXED CODE EXECUTION</p>
+                <h2 style="font-family:'Newsreader', Georgia, serif;font-size:28px;font-weight:500;margin:4px 0 8px;">Scratchpad Workspace</h2>
                 <p class="coding-subtitle">Write and execute arbitrary programs locally in C++, Java, Python, and JavaScript via Judge0 CE.</p>
               </div>
               <div class="coding-actions-bar">
@@ -172,32 +461,37 @@
           </div>
         </section>
 
-        <!-- SECTION 3: RESUME ANALYSER -->
+        <!-- ════════════════════════════════════════════════════════
+             SECTION 3: RESUME ANALYSER
+             ════════════════════════════════════════════════════════ -->
         <section id="section-resume" class="dashboard-section" hidden>
-          <p class="eyebrow">CAREER READINESS</p>
-          <h2>Resume Analyser</h2>
-          <p class="intro">Scan and score your resume against target engineering roles, identify gaps, and get actionable interview recommendations.</p>
+          <p class="header-welcome">CAREER READINESS</p>
+          <h2 style="font-family:'Newsreader', Georgia, serif;font-size:32px;font-weight:500;margin:6px 0 12px;">Resume Analyser</h2>
+          <p style="color:var(--ink-secondary);font-size:14.5px;max-width:520px;line-height:1.6;margin-bottom:28px;">
+            Scan and score your resume against target engineering roles, identify gaps, and get actionable interview recommendations.
+          </p>
           
-          <div class="resume-hero-card">
-            <div class="resume-icon-circle">📄</div>
-            <h3>Smart Resume Analysis Coming Soon</h3>
-            <p>Upload your resume to extract key tech stacks, evaluate alignment with interview tracks, and receive targeted question banks.</p>
-            <div class="resume-features-preview">
-              <div class="rf-card">
-                <b>Keyword Matching</b>
-                <small>ATS compliance check</small>
+          <div class="resume-hero-card" style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:36px;text-align:center;">
+            <div style="font-size:36px;margin-bottom:12px;">📄</div>
+            <h3 style="font-size:18px;font-weight:600;margin:0 0 8px;">Smart Resume Analysis Coming Soon</h3>
+            <p style="font-size:13.5px;color:var(--ink-secondary);max-width:440px;margin:0 auto 24px;">Upload your resume to extract key tech stacks, evaluate alignment with interview tracks, and receive targeted question banks.</p>
+            <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+              <div style="background:var(--card-bg-subtle);border:1px solid var(--border-light);border-radius:8px;padding:12px 18px;text-align:left;">
+                <b style="font-size:13px;display:block;">Keyword Matching</b>
+                <small style="color:var(--ink-muted);font-size:11px;">ATS compliance check</small>
               </div>
-              <div class="rf-card">
-                <b>Skill Gap Analysis</b>
-                <small>Identify missing topics</small>
+              <div style="background:var(--card-bg-subtle);border:1px solid var(--border-light);border-radius:8px;padding:12px 18px;text-align:left;">
+                <b style="font-size:13px;display:block;">Skill Gap Analysis</b>
+                <small style="color:var(--ink-muted);font-size:11px;">Identify missing topics</small>
               </div>
-              <div class="rf-card">
-                <b>Interview Questions</b>
-                <small>Tailored to your past experience</small>
+              <div style="background:var(--card-bg-subtle);border:1px solid var(--border-light);border-radius:8px;padding:12px 18px;text-align:left;">
+                <b style="font-size:13px;display:block;">Interview Questions</b>
+                <small style="color:var(--ink-muted);font-size:11px;">Tailored to your past experience</small>
               </div>
             </div>
           </div>
         </section>
+
       </main>
     </div>
 

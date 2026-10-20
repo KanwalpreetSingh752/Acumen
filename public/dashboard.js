@@ -1,7 +1,7 @@
 let roadmaps = {};
 
 // ── State ─────────────────────────────────────────────────────
-let activeSection = 'core-cs'; // 'core-cs' | 'coding' | 'resume'
+let activeSection = 'overview'; // 'overview' | 'core-cs' | 'coding' | 'resume'
 let openSubject = 'os';
 let openHeading = 0;
 let activeSubheading = 0;
@@ -20,6 +20,7 @@ const overallProgressEl = document.querySelector('#overallProgress');
 const sidebarCoreCsSubnav = document.querySelector('#sidebarCoreCsSubnav');
 const sectionTabs = document.querySelectorAll('.section-tab');
 const dashboardSections = {
+  'overview': document.querySelector('#section-overview'),
   'core-cs': document.querySelector('#section-core-cs'),
   'coding': document.querySelector('#section-coding'),
   'resume': document.querySelector('#section-resume')
@@ -205,29 +206,70 @@ function render() {
   const pct = total === 0 ? 0 : Math.round((done / total) * 100);
 
   const editSubjectBtn = (currentUser && currentUser.isAdmin)
-    ? `<a href="/admin/subjects.html" class="edit-material-btn" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:#5540c1;background:#f3f0ff;border:1px solid #dcd7fc;border-radius:6px;padding:5px 9px;text-decoration:none;margin-left:auto;">✏ Edit Subject Material</a>`
+    ? `<a href="/admin/subjects.html" class="btn-pill-dark" style="text-decoration:none;font-size:11.5px;padding:6px 14px;">✏ Edit Material</a>`
     : '';
 
   content.innerHTML = `
-    <div class="subject-progress-wrap">
-      <div class="subject-bar-header">
-        <span>${subject.name}</span>
-        <span>${done} / ${total} completed</span>
+    <!-- Main Study Reader Card -->
+    <article class="topic-main-card">
+      <div class="topic-meta-strip">
+        <span class="topic-tag-pill">LESSON 0${(activeSubheading + 1)}</span>
+        <span class="topic-breadcrumbs">${subject.name.toUpperCase()} · ${heading.title.toUpperCase()}</span>
       </div>
-      <div class="subject-bar-track">
-        <div class="subject-bar-fill ${openSubject}" style="width:${pct}%"></div>
+
+      <h2 class="topic-heading-title">${subheading.title}</h2>
+      
+      <div class="topic-body-text markdown-content">
+        ${formatMarkdown(subheading.text)}
       </div>
-    </div>
-    <div class="content-top">
-      <span class="content-icon ${openSubject}">${subject.icon}</span>
-      <div style="flex:1;">
-        <p class="eyebrow">${subject.name.toUpperCase()} / ${heading.title.toUpperCase()}</p>
-        <h2>${subheading.title}</h2>
+
+      <!-- Core Takeaways / Study Summary box -->
+      <div class="topic-prompt-box">
+        <span class="topic-prompt-label">KEY TAKEAWAY</span>
+        <p class="topic-prompt-text">Review the core mechanisms above. Ensure you understand the underlying invariants, trade-offs, and memory implications before marking as complete.</p>
       </div>
-      ${editSubjectBtn}
-    </div>
-    <div class="topic-text markdown-content">${formatMarkdown(subheading.text)}</div>
-    <p class="topic-note">Select another subheading in the sidebar to continue this roadmap.</p>`;
+
+      <!-- Study Action Bar -->
+      <div class="topic-action-bar">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button class="btn-pill-dark" type="button" onclick="document.querySelector('[data-toggle=\\'${openSubject}:${openHeading}:${activeSubheading}\\']')?.click();">
+            ✓ Mark as studied
+          </button>
+          <span style="font-size:12px;color:#777770;font-family:'DM Mono', monospace;">Estimated study time: 8-12 min</span>
+        </div>
+        ${editSubjectBtn}
+      </div>
+    </article>
+
+    <!-- Right Study Companion Panel -->
+    <aside class="companion-panel">
+      <!-- Study & Concept Checklist Card -->
+      <div class="approach-guide-card">
+        <h4 class="guide-title">Study Checklist</h4>
+        <div class="guide-step-list">
+          <div class="guide-step-item">
+            <span class="guide-step-num">01</span>
+            <span>Understand the fundamental definitions & principles</span>
+          </div>
+          <div class="guide-step-item">
+            <span class="guide-step-num">02</span>
+            <span>Analyze how the OS / hardware handles state & resources</span>
+          </div>
+          <div class="guide-step-item">
+            <span class="guide-step-num">03</span>
+            <span>Identify time & space overhead of each technique</span>
+          </div>
+          <div class="guide-step-item">
+            <span class="guide-step-num">04</span>
+            <span>Verify with realistic system architecture trade-offs</span>
+          </div>
+        </div>
+        <div class="guide-footer-badge">
+          <span>✓</span> Check off topics on the left sidebar as you learn
+        </div>
+      </div>
+    </aside>
+  `;
 
   renderOverallProgress();
 }
@@ -303,8 +345,20 @@ async function loadDashboard() {
     if (!res.ok) throw new Error('Not signed in');
     const { user } = await res.json();
     currentUser = user;
+    
     const userNameEl = document.querySelector('#userName');
     if (userNameEl) userNameEl.textContent = user.name.split(' ')[0];
+    
+    const userNameText = document.querySelector('#userNameText');
+    if (userNameText) userNameText.textContent = user.name || 'Student';
+    
+    const userAvatarText = document.querySelector('#userAvatarText');
+    if (userAvatarText && user.name) {
+      const parts = user.name.trim().split(/\s+/);
+      const initials = parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : parts[0].slice(0, 2).toUpperCase();
+      userAvatarText.textContent = initials;
+    }
+
     const adminLink = document.querySelector('#adminProblemsLink');
     if (adminLink) adminLink.hidden = !user.isAdmin;
     const adminSubjectsLink = document.querySelector('#adminSubjectsLink');
@@ -420,10 +474,34 @@ function initMonaco() {
   });
 
   window.require(['vs/editor/editor.main'], () => {
+    // Define custom warm light theme matching #F0F1EC and #C66A35
+    monaco.editor.defineTheme('prepflow-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'comment', foreground: '8a8b84', fontStyle: 'italic' },
+        { token: 'keyword', foreground: 'C66A35', fontStyle: 'bold' },
+        { token: 'identifier', foreground: '111111' },
+        { token: 'string', foreground: '2d6a4f' },
+        { token: 'number', foreground: '9c4221' },
+        { token: 'type', foreground: 'b45309' }
+      ],
+      colors: {
+        'editor.background': '#FCFCFA',
+        'editor.foreground': '#111111',
+        'editorLineNumber.foreground': '#b8baa8',
+        'editorLineNumber.activeForeground': '#C66A35',
+        'editorCursor.foreground': '#C66A35',
+        'editor.selectionBackground': '#fde8d8',
+        'editor.inactiveSelectionBackground': '#f5eae2',
+        'editor.lineHighlightBackground': '#F7F7F3'
+      }
+    });
+
     monacoEditor = monaco.editor.create(container, {
       value: DEFAULT_TEMPLATES[currentLanguageKey] || '',
       language: currentLanguageKey,
-      theme: 'vs-dark',
+      theme: 'prepflow-light',
       automaticLayout: true,
       fontSize: 13,
       fontFamily: "'Fira Code', 'DM Mono', monospace",
@@ -703,6 +781,244 @@ window.addEventListener('resize', () => {
   }
 });
 
+async function renderMindriftCharts() {
+  // 1. Current Date
+  const headerDateEl = document.querySelector('#currentHeaderDate');
+  if (headerDateEl) {
+    const now = new Date();
+    headerDateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  // 2. Fetch real user analytics (submissions, study completions)
+  let userSubmissions = [];
+  try {
+    const res = await fetch('/api/analytics');
+    if (res.ok) {
+      const data = await res.json();
+      userSubmissions = data.submissions || [];
+    }
+  } catch (err) {
+    console.warn('Analytics fetch error:', err);
+  }
+
+  // 3. Compute Real Curriculum Stats
+  const { done: totalDoneLessons, total: totalCurriculumLessons } = countAll();
+  const curriculumPct = totalCurriculumLessons > 0 ? Math.round((totalDoneLessons / totalCurriculumLessons) * 100) : 0;
+
+  // Real Submissions Stats
+  const acceptedSubs = userSubmissions.filter(s => s.verdict === 'Accepted');
+  const solvedProblemIds = new Set(acceptedSubs.map(s => s.problem_id));
+  const totalSolvedCount = solvedProblemIds.size;
+  const totalSubmissionsCount = userSubmissions.length;
+  const accuracyRate = totalSubmissionsCount > 0 ? Math.round((acceptedSubs.length / totalSubmissionsCount) * 100) : 0;
+
+  // Update DOM Metric Card 2 (Course Progress)
+  const metricProgressVal = document.querySelector('#metricProgressVal');
+  if (metricProgressVal) metricProgressVal.textContent = `${curriculumPct}%`;
+
+  const metricProgressTag = document.querySelector('#metricProgressTag');
+  if (metricProgressTag) metricProgressTag.textContent = `${totalDoneLessons} of ${totalCurriculumLessons} lessons`;
+
+  const metricLessonsDone = document.querySelector('#metricLessonsDone');
+  if (metricLessonsDone) metricLessonsDone.textContent = String(totalDoneLessons);
+
+  const metricLessonsTotal = document.querySelector('#metricLessonsTotal');
+  if (metricLessonsTotal) metricLessonsTotal.textContent = String(totalCurriculumLessons);
+
+  // Update DOM Metric Card 3 (Coding Practice)
+  const metricProblemsSolved = document.querySelector('#metricProblemsSolved');
+  if (metricProblemsSolved) metricProblemsSolved.textContent = String(totalSolvedCount);
+
+  const metricAcceptedSubs = document.querySelector('#metricAcceptedSubs');
+  if (metricAcceptedSubs) metricAcceptedSubs.textContent = `${acceptedSubs.length} Accepted submissions`;
+
+  const metricTotalSubs = document.querySelector('#metricTotalSubs');
+  if (metricTotalSubs) metricTotalSubs.textContent = `${totalSubmissionsCount} Total evaluations`;
+
+  const metricAccRate = document.querySelector('#metricAccRate');
+  if (metricAccRate) metricAccRate.textContent = `${accuracyRate}% Accuracy rate`;
+
+  // 4. Map Real Activities by Date (ISO YYYY-MM-DD)
+  const activityMap = new Map();
+  // Count submissions by date
+  userSubmissions.forEach(sub => {
+    if (!sub.created_at) return;
+    const dateStr = sub.created_at.slice(0, 10);
+    activityMap.set(dateStr, (activityMap.get(dateStr) || 0) + 1);
+  });
+
+  // Calculate Streak & Active Days
+  const activeDaysCount = activityMap.size;
+  const totalActionsCount = userSubmissions.length + totalDoneLessons;
+
+  // Compute current streak backwards from today
+  let currentStreak = 0;
+  const today = new Date();
+  for (let d = 0; d < 365; d++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() - d);
+    const dateStr = checkDate.toISOString().slice(0, 10);
+    if (activityMap.has(dateStr)) {
+      currentStreak++;
+    } else if (d > 0) {
+      break;
+    }
+  }
+
+  // Update DOM Metric Card 1 (Streak & Active Days)
+  const metricStreakVal = document.querySelector('#metricStreakVal');
+  if (metricStreakVal) metricStreakVal.textContent = String(currentStreak);
+
+  const metricStreakTag = document.querySelector('#metricStreakTag');
+  if (metricStreakTag) metricStreakTag.textContent = currentStreak === 1 ? '1 day streak' : `${currentStreak} days streak`;
+
+  const metricLongestStreak = document.querySelector('#metricLongestStreak');
+  if (metricLongestStreak) metricLongestStreak.textContent = `${currentStreak} days`;
+
+  const metricActiveDays = document.querySelector('#metricActiveDays');
+  if (metricActiveDays) metricActiveDays.textContent = `${activeDaysCount} days`;
+
+  const metricTotalActions = document.querySelector('#metricTotalActions');
+  if (metricTotalActions) metricTotalActions.textContent = String(totalActionsCount);
+
+  const timelineActiveDaysCount = document.querySelector('#timelineActiveDaysCount');
+  if (timelineActiveDaysCount) timelineActiveDaysCount.textContent = String(activeDaysCount);
+
+  // 5. Generate Heatmap Grid for the Past 52 Weeks (364 Days)
+  const heatmapGrid = document.querySelector('#heatmapGrid');
+  if (heatmapGrid) {
+    heatmapGrid.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+
+    // End date is next Saturday to align neat columns
+    const end = new Date(today);
+    end.setDate(end.getDate() + (6 - end.getDay()));
+    const start = new Date(end);
+    start.setDate(end.getDate() - (52 * 7 - 1));
+
+    let cursor = new Date(start);
+    for (let w = 0; w < 52; w++) {
+      const colDiv = document.createElement('div');
+      colDiv.className = 'heatmap-col';
+
+      for (let day = 0; day < 7; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'heat-cell';
+        const dateStr = cursor.toISOString().slice(0, 10);
+        const count = activityMap.get(dateStr) || 0;
+
+        if (count === 0) {
+          cell.classList.add('lvl-0');
+        } else if (count === 1) {
+          cell.classList.add('lvl-1');
+        } else if (count <= 3) {
+          cell.classList.add('lvl-2');
+        } else if (count <= 6) {
+          cell.classList.add('lvl-3');
+        } else {
+          cell.classList.add('lvl-4');
+        }
+
+        cell.title = `${dateStr}: ${count} activity${count === 1 ? '' : 'ies'}`;
+        colDiv.appendChild(cell);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      fragment.appendChild(colDiv);
+    }
+    heatmapGrid.appendChild(fragment);
+  }
+
+  // 6. Micro bar charts (Weekly breakdown of real data)
+  const streakMicroBars = document.querySelector('#streakMicroBars');
+  if (streakMicroBars) {
+    streakMicroBars.innerHTML = '';
+    // Show last 14 days
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      const count = activityMap.get(dateStr) || 0;
+      const bar = document.createElement('div');
+      bar.className = 'micro-bar';
+      bar.style.height = count > 0 ? `${Math.min(100, 30 + count * 20)}%` : '15%';
+      if (count > 0) bar.classList.add('active-accent');
+      streakMicroBars.appendChild(bar);
+    }
+  }
+
+  const courseMicroBars = document.querySelector('#courseMicroBars');
+  if (courseMicroBars) {
+    courseMicroBars.innerHTML = '';
+    for (let i = 0; i < 14; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'micro-bar';
+      const pct = totalCurriculumLessons > 0 ? (totalDoneLessons / totalCurriculumLessons) : 0;
+      bar.style.height = `${Math.max(15, Math.round(pct * 100))}%`;
+      if (pct > 0) bar.classList.add('active-amber');
+      courseMicroBars.appendChild(bar);
+    }
+  }
+
+  const studyMicroBars = document.querySelector('#studyMicroBars');
+  if (studyMicroBars) {
+    studyMicroBars.innerHTML = '';
+    for (let i = 0; i < 14; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'micro-bar';
+      bar.style.height = totalSubmissionsCount > 0 ? '60%' : '15%';
+      if (totalSubmissionsCount > 0) bar.classList.add('active-blue');
+      studyMicroBars.appendChild(bar);
+    }
+  }
+
+  // 7. Render Real Course Progress in Learning Progress Widget
+  const widgetList = document.querySelector('#widgetLearningProgressList');
+  if (widgetList) {
+    widgetList.innerHTML = '';
+    const subjectKeys = Object.keys(roadmaps);
+    if (subjectKeys.length === 0) {
+      widgetList.innerHTML = '<p style="color:var(--ink-muted);font-size:12px;">No subjects loaded.</p>';
+    } else {
+      const colors = ['var(--accent)', '#d97706', '#2563eb', '#10b981'];
+      subjectKeys.forEach((subjId, idx) => {
+        const subj = roadmaps[subjId];
+        const { done, total } = countSubject(subjId);
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        const color = colors[idx % colors.length];
+
+        const item = document.createElement('div');
+        item.className = 'course-item';
+        item.style.cursor = 'pointer';
+        item.onclick = () => {
+          openSubject = subjId;
+          openHeading = 0;
+          activeSubheading = 0;
+          switchSection('core-cs');
+          render();
+        };
+
+        const initials = subj.name.split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase();
+
+        item.innerHTML = `
+          <div class="course-badge" style="background:${color};">${initials}</div>
+          <div class="course-details">
+            <div class="course-name">${escapeHtml(subj.name)}</div>
+            <div class="course-sub">${done} of ${total} modules completed</div>
+          </div>
+          <div class="course-ring-wrap">
+            <svg viewBox="0 0 36 36" class="circular-chart" style="width:36px;height:36px;">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#dedfd8" stroke-width="3.5"/>
+              <path class="circle" stroke-dasharray="${pct}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="${color}" stroke-width="3.5" stroke-linecap="round"/>
+            </svg>
+            <span class="course-ring-val">${pct}%</span>
+          </div>
+        `;
+        widgetList.appendChild(item);
+      });
+    }
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────────
 (async () => {
   await loadDashboard();
@@ -712,12 +1028,15 @@ window.addEventListener('resize', () => {
   await loadCatalogTopics();
   await loadCatalogProblems();
   render();
+  renderMindriftCharts();
 
   // Check URL query for default section
   const urlParams = new URLSearchParams(window.location.search);
   const targetSec = urlParams.get('section');
-  if (targetSec && ['core-cs', 'coding', 'resume'].includes(targetSec)) {
+  if (targetSec && ['overview', 'core-cs', 'coding', 'resume'].includes(targetSec)) {
     switchSection(targetSec);
+  } else {
+    switchSection('overview');
   }
 })();
 

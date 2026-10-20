@@ -1095,6 +1095,41 @@ app.get('/api/progress', async (req, res, next) => {
   } catch (error) { next(error); }
 });
 
+// Real User Analytics Endpoint (Submissions + Progress Timeline)
+app.get('/api/analytics', async (req, res, next) => {
+  try {
+    const user = await getAuthUser(req);
+    if (!user) return res.status(401).json({ error: 'Please sign in to view analytics.' });
+
+    // 1. Fetch user's submissions
+    let submissions = [];
+    if (supabaseAvailable) {
+      const { data, error } = await supabaseAdmin
+        .from('submissions')
+        .select('id, problem_id, verdict, language, execution_time, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (!error && data) submissions = data;
+    }
+
+    // 2. Fetch user's completed study units
+    let completedLessons = [];
+    if (supabaseAvailable) {
+      const { data } = await supabaseAdmin
+        .from('progress')
+        .select('completed, updated_at')
+        .eq('user_id', user.id)
+        .single();
+      if (data?.completed) completedLessons = data.completed;
+    }
+
+    res.json({
+      submissions,
+      completedLessons
+    });
+  } catch (error) { next(error); }
+});
+
 app.post('/api/progress/toggle', async (req, res, next) => {
   try {
     const user = await getAuthUser(req);

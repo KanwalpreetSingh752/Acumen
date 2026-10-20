@@ -299,13 +299,37 @@ function initMonaco() {
   });
 
   window.require(['vs/editor/editor.main'], () => {
+    // Define custom warm light theme matching #F0F1EC and #C66A35
+    monaco.editor.defineTheme('prepflow-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [
+        { token: 'comment', foreground: '8a8b84', fontStyle: 'italic' },
+        { token: 'keyword', foreground: 'C66A35', fontStyle: 'bold' },
+        { token: 'identifier', foreground: '111111' },
+        { token: 'string', foreground: '2d6a4f' },
+        { token: 'number', foreground: '9c4221' },
+        { token: 'type', foreground: 'b45309' }
+      ],
+      colors: {
+        'editor.background': '#FCFCFA',
+        'editor.foreground': '#111111',
+        'editorLineNumber.foreground': '#b8baa8',
+        'editorLineNumber.activeForeground': '#C66A35',
+        'editorCursor.foreground': '#C66A35',
+        'editor.selectionBackground': '#fde8d8',
+        'editor.inactiveSelectionBackground': '#f5eae2',
+        'editor.lineHighlightBackground': '#F7F7F3'
+      }
+    });
+
     const initialCode = starterCodeMap[activeLanguage] || DEFAULT_TEMPLATES[activeLanguage] || '';
     userCodeCache[activeLanguage] = initialCode;
 
     monacoEditor = monaco.editor.create(container, {
       value: initialCode,
       language: getMonacoLang(activeLanguage),
-      theme: 'vs-dark',
+      theme: 'prepflow-light',
       automaticLayout: true,
       fontSize: 13,
       fontFamily: "'Fira Code', 'DM Mono', monospace",
