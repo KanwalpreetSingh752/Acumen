@@ -17,7 +17,7 @@ function openAuth(nextMode) {
   submit.innerHTML = login ? 'Sign in <span>→</span>' : 'Create account <span>→</span>';
   nameField.hidden = login; nameField.querySelector('input').required = !login;
   password.autocomplete = login ? 'current-password' : 'new-password';
-  switcher.innerHTML = login ? 'New to PrepFlow? <button data-auth="register">Create an account</button>' : 'Already have an account? <button data-auth="login">Sign in</button>';
+  switcher.innerHTML = login ? 'New to Acumen? <button data-auth="register">Create an account</button>' : 'Already have an account? <button data-auth="login">Sign in</button>';
   modal.hidden = false; document.body.classList.add('modal-open'); form.elements[login ? 'email' : 'name'].focus();
 }
 function closeAuth() { modal.hidden = true; document.body.classList.remove('modal-open'); }

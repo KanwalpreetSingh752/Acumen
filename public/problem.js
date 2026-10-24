@@ -1,5 +1,5 @@
 /**
- * PrepFlow — Student Problem Solving Interface
+ * Acumen — Student Problem Solving Interface
  */
 
 // ── State ─────────────────────────────────────────────────────
@@ -206,7 +206,7 @@ async function loadProblem() {
 }
 
 function renderProblemUI(prob) {
-  document.title = `${prob.title} — PrepFlow`;
+  document.title = `${prob.title} — Acumen`;
   topProblemTitle.textContent = prob.title;
   problemTitle.textContent = prob.title;
 
@@ -300,7 +300,7 @@ function initMonaco() {
 
   window.require(['vs/editor/editor.main'], () => {
     // Define custom warm light theme matching #F0F1EC and #C66A35
-    monaco.editor.defineTheme('prepflow-light', {
+    monaco.editor.defineTheme('acumen-light', {
       base: 'vs',
       inherit: true,
       rules: [
@@ -329,7 +329,7 @@ function initMonaco() {
     monacoEditor = monaco.editor.create(container, {
       value: initialCode,
       language: getMonacoLang(activeLanguage),
-      theme: 'prepflow-light',
+      theme: 'acumen-light',
       automaticLayout: true,
       fontSize: 13,
       fontFamily: "'Fira Code', 'DM Mono', monospace",
@@ -588,7 +588,7 @@ async function handleSubmitCode() {
         <div class="verdict-card failed">
           <div class="verdict-title">Authentication Required</div>
           <p style="color:#cbd5e1;font-size:13px;margin:8px 0 14px;">You must be signed in to submit code and record progress.</p>
-          <a href="/?login=true" style="display:inline-block;padding:8px 16px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none;font:600 13px var(--font-sans);">Sign in to PrepFlow</a>
+          <a href="/?login=true" style="display:inline-block;padding:8px 16px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none;font:600 13px var(--font-sans);">Sign in to Acumen</a>
         </div>
       `;
       return;

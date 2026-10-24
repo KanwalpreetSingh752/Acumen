@@ -22,7 +22,7 @@ int main() {
     if (cin >> a >> b) {
         cout << "Sum: " << (a + b) << endl;
     } else {
-        cout << "Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)" << endl;
+        cout << "Hello from Acumen! (Enter numbers in stdin box above to compute sum)" << endl;
     }
     return 0;
 }`
@@ -45,7 +45,7 @@ public class Main {
                 return;
             }
         }
-        System.out.println("Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)");
+        System.out.println("Hello from Acumen! (Enter numbers in stdin box above to compute sum)");
     }
 }`
   },
@@ -60,7 +60,7 @@ data = sys.stdin.read().split()
 if len(data) >= 2:
     print("Sum:", int(data[0]) + int(data[1]))
 else:
-    print("Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)")
+    print("Hello from Acumen! (Enter numbers in stdin box above to compute sum)")
 `
   },
   javascript: {
@@ -74,7 +74,7 @@ const input = fs.readFileSync(0, 'utf-8').trim().split(/\\s+/).filter(Boolean);
 if (input.length >= 2) {
   console.log("Sum:", Number(input[0]) + Number(input[1]));
 } else {
-  console.log("Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)");
+  console.log("Hello from Acumen! (Enter numbers in stdin box above to compute sum)");
 }
 `
   }

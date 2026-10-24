@@ -406,7 +406,7 @@ int main() {
     if (cin >> a >> b) {
         cout << "Sum: " << (a + b) << endl;
     } else {
-        cout << "Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)" << endl;
+        cout << "Hello from Acumen! (Enter numbers in stdin box above to compute sum)" << endl;
     }
     return 0;
 }`,
@@ -423,7 +423,7 @@ public class Main {
                 return;
             }
         }
-        System.out.println("Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)");
+        System.out.println("Hello from Acumen! (Enter numbers in stdin box above to compute sum)");
     }
 }`,
   python: `import sys
@@ -432,7 +432,7 @@ data = sys.stdin.read().split()
 if len(data) >= 2:
     print("Sum:", int(data[0]) + int(data[1]))
 else:
-    print("Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)")
+    print("Hello from Acumen! (Enter numbers in stdin box above to compute sum)")
 `,
   javascript: `const fs = require('fs');
 
@@ -440,7 +440,7 @@ const input = fs.readFileSync(0, 'utf-8').trim().split(/\\s+/).filter(Boolean);
 if (input.length >= 2) {
   console.log("Sum:", Number(input[0]) + Number(input[1]));
 } else {
-  console.log("Hello from PrepFlow! (Enter numbers in stdin box above to compute sum)");
+  console.log("Hello from Acumen! (Enter numbers in stdin box above to compute sum)");
 }
 `
 };
@@ -475,7 +475,7 @@ function initMonaco() {
 
   window.require(['vs/editor/editor.main'], () => {
     // Define custom warm light theme matching #F0F1EC and #C66A35
-    monaco.editor.defineTheme('prepflow-light', {
+    monaco.editor.defineTheme('acumen-light', {
       base: 'vs',
       inherit: true,
       rules: [
@@ -501,7 +501,7 @@ function initMonaco() {
     monacoEditor = monaco.editor.create(container, {
       value: DEFAULT_TEMPLATES[currentLanguageKey] || '',
       language: currentLanguageKey,
-      theme: 'prepflow-light',
+      theme: 'acumen-light',
       automaticLayout: true,
       fontSize: 13,
       fontFamily: "'Fira Code', 'DM Mono', monospace",

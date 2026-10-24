@@ -105,7 +105,7 @@ const runRes1 = await fetch(`${baseUrl}/api/problems/${problem.id}/run`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    Cookie: `prepflow_token=${tokenA}`
+    Cookie: `acumen_token=${tokenA}`
   },
   body: JSON.stringify({
     sourceCode: correctCppSolution,
@@ -139,7 +139,7 @@ const runRes2 = await fetch(`${baseUrl}/api/problems/${problem.id}/run`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    Cookie: `prepflow_token=${tokenA}`
+    Cookie: `acumen_token=${tokenA}`
   },
   body: JSON.stringify({
     sourceCode: wrongCode,
@@ -162,7 +162,7 @@ const runRes3 = await fetch(`${baseUrl}/api/problems/${problem.id}/run`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    Cookie: `prepflow_token=${tokenA}`
+    Cookie: `acumen_token=${tokenA}`
   },
   body: JSON.stringify({
     sourceCode: brokenCode,
@@ -184,7 +184,7 @@ const submitRes = await fetch(`${baseUrl}/api/problems/${problem.id}/submit`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    Cookie: `prepflow_token=${tokenA}`
+    Cookie: `acumen_token=${tokenA}`
   },
   body: JSON.stringify({
     sourceCode: correctCppSolution,
@@ -209,7 +209,7 @@ console.log('✓ [Security] Verified: Submit response does not leak hidden test 
 // ── Test 7: Submissions History API ───────────────────────────
 console.log('\n[Submissions History]');
 const subsRes = await fetch(`${baseUrl}/api/problems/${problem.id}/submissions`, {
-  headers: { Cookie: `prepflow_token=${tokenA}` }
+  headers: { Cookie: `acumen_token=${tokenA}` }
 });
 const subsData = await subsRes.json();
 console.log(`✓ Fetched ${subsData.submissions?.length} submissions for Student A`);
@@ -229,7 +229,7 @@ if (subsData.submissions && subsData.submissions.length > 0) {
 // ── Test 9: Catalog & Solved Status ───────────────────────────
 console.log('\n[Catalog & Solved Status]');
 const catalogRes = await fetch(`${baseUrl}/api/problems`, {
-  headers: { Cookie: `prepflow_token=${tokenA}` }
+  headers: { Cookie: `acumen_token=${tokenA}` }
 });
 const catalogData = await catalogRes.json();
 const twoSumCatalog = catalogData.problems.find(p => p.slug === 'two-sum');

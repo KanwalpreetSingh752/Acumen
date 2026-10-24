@@ -1,119 +1,138 @@
-# PrepFlow — Full-Stack Technical Interview & CS Preparation Platform
+# Acumen
 
-[![Node.js Version](https://img.shields.io/badge/Node.js-18%2B-brightgreen.svg)](https://nodejs.org/)
-[![Docker](https://img.shields.io/badge/Docker-Judge0%20CE-blue.svg)](https://judge0.com/)
-[![Database](https://img.shields.io/badge/Database-Supabase%20%7C%20PostgreSQL-3ECF8E.svg)](https://supabase.com/)
-[![UI Style](https://img.shields.io/badge/Style-Swiss%20Editorial-C66A35.svg)](#design-system--aesthetic)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](#license)
-
-PrepFlow is an all-in-one technical interview preparation platform designed with a warm, distraction-free **Swiss Editorial aesthetic** (`#F0F1EC` background, `#111111` ink, `#C66A35` accent). It integrates self-paced conceptual study for core computer science topics with an in-browser LeetCode-style coding engine powered by sandboxed multi-language remote code execution (Judge0 CE).
+Acumen is an engineering interview preparation and computer science education platform. It provides a structured, self-paced study environment for core systems topics alongside a sandboxed, multi-language code execution engine and an activity analytics dashboard.
 
 ---
 
-## 📸 Key Features & Architecture Highlights
-
-### 1. 📊 Mindrift-Inspired Analytics Dashboard
-* **Real Activity Heatmap**: 52-week by 7-day contribution matrix mapping verified user actions (submissions, completed modules) with rounded squircle cells and activity intensity shading.
-* **Live Progress Metrics**:
-  * **Learning Streak & Active Days**: Computed dynamically from consecutive submission days.
-  * **Curriculum Completion Gauge**: Calculated from database-backed progress across Operating Systems, Networks, DBMS, and System Design.
-  * **Coding Practice Stats**: Displays accepted solutions, total submissions, and accuracy rates.
-* **Subject Progress Breakdown**: Circular gauge rings tracking completion percentage per topic.
-* **Skill Radar**: Vector polygon visualizing competency across Algorithms, Systems, Networks, Databases, and Architecture.
-
-### 2. 💻 Sandboxed Coding Platform & Problem Judge (Judge0 CE + Monaco)
-* **Monaco Code Editor**: Fully configured with custom `prepflow-light` theme (`#FCFCFA` glare-free editor surface, `#C66A35` cursor & syntax accents).
-* **Multi-Language Support**:
-  * **C++** (GCC 9.2.0)
-  * **Java** (OpenJDK 13.0.1) with tuned Metaspace (`-XX:MetaspaceSize=32m -XX:MaxMetaspaceSize=64m`) and Serial GC
-  * **Python** (3.8.1)
-  * **JavaScript** (Node.js 12.14.0)
-* **Dual Execution Modes**:
-  * **DSA Problems Catalog**: Filter problems by difficulty (*Easy, Medium, Hard*) and topics (*Arrays, Hash Tables, Trees, DP*). Run code against visible test cases or submit against hidden test cases.
-  * **Code Scratchpad**: Free-form isolated playground with arbitrary standard input (`stdin`) and live execution result streaming.
-
-### 3. 📚 Core CS Conceptual Library
-* **Study-First Philosophy**: Structured conceptual reading and architectural notes (not an intimidating interview room).
-* **Key Takeaway Boxes**: Highlighting algorithmic trade-offs (e.g. CPU scheduling quantum sizing, DB transaction isolation levels, indexing mechanics).
-* **Self-Paced Checklists**: Track progress and mark topics studied with persistent Supabase state.
-
-### 4. 🎨 Editorial Swiss Design System
-* **Warm Canvas**: Base background `#F0F1EC`, preventing harsh white monitor glare.
-* **Typography**: Elegant serifs (`Newsreader`, 500-weight) paired with clean geometric body typography (`Inter`) and technical monospaces (`DM Mono`).
-* **Subtle Surfaces**: Cards set to `#FCFCFA` / `#F6F7F2` with soft `#dedfd8` structural hairline borders.
-
----
-
-## 🛠 Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Runtime & Backend** | Node.js (ESM), Express.js 5.x |
-| **Code Execution Engine** | Judge0 CE v1.13.1 (Self-hosted via Docker Compose, isolated sandboxing) |
-| **Database & Auth** | Supabase (PostgreSQL), Supabase Auth, Row-Level Security (RLS) |
-| **Frontend** | Vanilla JS (ES Modules), Custom CSS3 variables, Monaco Editor 0.45.0 |
-| **Typography** | Newsreader (Google Fonts), Inter, DM Mono |
-
----
-
-## 📁 Repository Structure
+## Architecture Overview
 
 ```
-InterviewPrep/
+                      +-----------------------------------+
+                      |         Web Client                |
+                      |  (Monaco Editor, Modular Views)   |
+                      +-----------------+-----------------+
+                                        | HTTP / JSON
+                                        v
+                      +-----------------+-----------------+
+                      |     Express.js API Gateway        |
+                      |   (Auth, Routing, Rate Limits)    |
+                      +--------+------------------+-------+
+                               |                  |
+           +-------------------+                  +-------------------+
+           v                                                          v
++----------------------+                                   +-----------------------+
+|  Supabase (Postgres) |                                   | Judge0 CE (Sandbox)   |
+|  - Users & Sessions  |                                   | - Worker Instances    |
+|  - Progress State    |                                   | - Redis Job Queue     |
+|  - Submissions Audit |                                   | - Isolated Runtimes   |
++----------------------+                                   +-----------------------+
+```
+
+The system comprises three primary layers:
+
+1. **Client Layer**: Modular web interface incorporating Monaco Editor (`0.45.0`), customized with the `acumen-light` color palette, synchronized state, and an SVG-based analytics timeline.
+2. **Application Gateway**: Node.js and Express 5 backend managing authentication tokens, request validation, problem metadata distribution, and evaluation pipelines.
+3. **Execution Sandbox**: Multi-container Judge0 CE deployment running isolated workers against an internal Redis queue with configured time, memory, and thread ceilings.
+
+---
+
+## Core Systems
+
+### 1. Sandboxed Code Execution Engine
+Remote code evaluation is delegated to an isolated Judge0 CE cluster. Source payloads and standard inputs are encoded in Base64 for transport safety, submitted asynchronously, and polled with exponential backoff until completion.
+
+* **Supported Languages**:
+  * C++ (GCC 9.2.0)
+  * Java (OpenJDK 13.0.1)
+  * Python (3.8.1)
+  * JavaScript (Node.js 12.14.0)
+* **JVM Sandbox Tuning**: OpenJDK 13 includes bounded virtual memory reservations (`-XX:MetaspaceSize=32m -XX:MaxMetaspaceSize=64m -Xms32m -Xmx128m -XX:+UseSerialGC`) to avoid virtual memory allocation failures under container process limits.
+* **Evaluation Pipeline**:
+  * **Run**: Compiles and executes code against visible test vectors for immediate debugging.
+  * **Submit**: Runs full validation against hidden database-backed test cases without exposing inputs, expected outputs, or test count metadata to the client.
+
+### 2. User Analytics & Progress Tracking
+The overview dashboard presents verified, database-derived metrics without client-side mock data:
+* **Activity Heatmap**: 52-week by 7-day contribution matrix generated from timestamped submissions and completed modules.
+* **Streak Computation**: Sequential activity tracking calculated from continuous active calendar dates.
+* **Curriculum Completion**: Aggregated progress computed across Operating Systems, Computer Networks, Database Management Systems, and System Design.
+* **Evaluation Accuracy**: Success-to-failure ratio derived from recorded submission outcomes in PostgreSQL.
+
+### 3. Core Computer Science Library
+Designed around conceptual retention rather than algorithmic drilling:
+* Comprehensive notes covering Operating Systems, Networks, DBMS, and Distributed Systems.
+* Algorithmic and architectural trade-off analyses (e.g., CPU scheduling quantum sizing, isolation levels, buffer cache replacement strategies).
+* Independent progress toggling synchronized per authenticated account.
+
+---
+
+## Technical Specifications
+
+| Component | Implementation |
+|---|---|
+| Runtime | Node.js (ES Modules, v18+) |
+| HTTP Framework | Express.js 5.x |
+| Database & Identity | PostgreSQL via Supabase, Row-Level Security (RLS) |
+| Remote Code Execution | Judge0 CE v1.13.1 (Docker Compose) |
+| Task Queue (Judge0) | Redis 7.2.4 |
+| Code Editor | Monaco Editor 0.45.0 |
+| Styling & Typography | Vanilla CSS3, Newsreader (Serif), Inter, DM Mono |
+
+---
+
+## Project Structure
+
+```
+.
 ├── docker/
 │   └── judge0/
-│       ├── docker-compose.yml     # Self-hosted Judge0 CE, Postgres & Redis
-│       ├── judge0.conf            # Judge0 environment & execution configs
-│       └── init-java.sql          # OpenJDK 13 metaspace and heap bounding
+│       ├── docker-compose.yml       # Judge0 server, workers, Redis, and internal DB
+│       ├── judge0.conf              # Sandbox quotas, network configs, and runtime settings
+│       └── init-java.sql            # Database bootstrap configuring JVM memory constraints
 ├── public/
-│   ├── index.html                 # Editorial landing page
-│   ├── dashboard.html             # Mindrift analytics & workspace dashboard
-│   ├── dashboard.js               # Analytics, heatmap & section controller
-│   ├── mindrift-dashboard.css     # Analytics, cards, squircle cells & radar styles
-│   ├── problem.html               # Dedicated two-pane problem solver
-│   ├── problem.js                 # Monaco editor, test runner, judge evaluator
-│   ├── problem.css                # Problem workspace layout & split panels
-│   ├── core-subjects.html         # Standalone Core CS study reader
-│   ├── dsa.html                   # DSA topic roadmap tracks
-│   ├── development.html           # Career & development hub
-│   └── admin/                     # Problem & Subject authoring portals
+│   ├── index.html                   # Landing page
+│   ├── dashboard.html               # Main workspace and analytics interface
+│   ├── dashboard.js                 # Workspace orchestration and analytics renderer
+│   ├── mindrift-dashboard.css       # Layout and widget stylesheets
+│   ├── problem.html                 # Coding workspace interface
+│   ├── problem.js                   # Monaco editor integration and evaluation runner
+│   ├── problem.css                  # Dual-pane code layout styles
+│   ├── core-subjects.html           # Systems and architecture reader
+│   ├── dsa.html                     # Algorithm roadmaps
+│   └── admin/                       # Content authoring tools
 ├── scripts/
-│   ├── test-code-execution.js     # Verification suite for Judge0 languages
-│   ├── test-phase2-e2e.js         # End-to-end problem submission test
-│   └── run-migration.js           # Supabase database schema migrations
+│   ├── test-code-execution.js       # Automated end-to-end sandbox test suite
+│   ├── test-phase2-e2e.js           # Problem submission verification script
+│   └── run-migration.js             # Schema migration utility
 ├── services/
-│   └── judge0.js                  # Judge0 client, polling & payload encoding
-├── server.js                      # Express API gateway & authentication middleware
-└── package.json                   # Project manifest & scripts
+│   └── judge0.js                    # Judge0 client and output normalization
+├── server.js                        # API Gateway and middleware configuration
+└── package.json                     # Project manifest and command scripts
 ```
 
 ---
 
-## 🚀 Getting Started
+## Setup and Deployment
 
 ### Prerequisites
-* **Node.js**: v18.0.0 or higher
-* **Docker Desktop**: Running with WSL2 backend (for Windows users) or native Docker (Linux/macOS)
-* **Supabase Project**: Free-tier or self-hosted Supabase database
+* **Node.js**: Version 18.0.0 or higher
+* **Docker Engine & Docker Compose**: v2.0+ (Docker Desktop with WSL2 on Windows, or native Docker on Linux/macOS)
+* **Supabase Project**: Active PostgreSQL instance with migration schemas applied
 
----
-
-### 1. Clone & Install Dependencies
+### 1. Clone Repository and Install Dependencies
 ```bash
-git clone https://github.com/<your-username>/InterviewPrep.git
-cd InterviewPrep
+git clone https://github.com/<your-organization>/Acumen.git
+cd Acumen
 npm install
 ```
 
----
-
-### 2. Configure Environment Variables
-Create a `.env` file in the root directory:
+### 2. Environment Configuration
+Create a `.env` file in the project root:
 ```env
 PORT=3000
 NODE_ENV=development
 
-# Supabase Credentials
+# Supabase Configuration
 SUPABASE_URL=https://<your-project>.supabase.co
 SUPABASE_ANON_KEY=<your-anon-key>
 SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
@@ -121,83 +140,91 @@ SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 # Judge0 Execution URL
 JUDGE0_URL=http://localhost:2358
 
-# Admin & Test Accounts
-ADMIN_API_KEY=your-secure-admin-key
-TEST_USER_EMAIL=user@example.com
+# Administration
+ADMIN_API_KEY=your-admin-api-key
+TEST_USER_EMAIL=test@example.com
 TEST_USER_PASSWORD=YourSecurePassword123
 ```
 
----
-
-### 3. Start Judge0 Code Execution Engine (Docker)
-In a separate terminal, start the sandboxed Judge0 cluster:
+### 3. Initialize Sandboxed Execution Engine
+Deploy the Judge0 service stack:
 ```bash
 cd docker/judge0
 docker compose up -d
 ```
 
-Verify containers are running:
+Verify that all service containers are healthy:
 ```bash
-docker ps
-# Expected: judge0-server, judge0-workers, judge0-db, judge0-redis
+docker compose ps
 ```
+The stack should list:
+* `judge0-server` (Port 2358)
+* `judge0-workers`
+* `judge0-db` (Postgres)
+* `judge0-redis`
 
-*Note: For Java (OpenJDK 13.0.1) execution within virtual memory bounds, the database update in `init-java.sql` bounds compilation and runtime metaspace.*
-
----
-
-### 4. Run Verification Suite
-Confirm Judge0 executes all supported languages (C++, Python, Java, JavaScript) and handles runtime exceptions:
+### 4. Execute Sandbox Verification Suite
+Run the test harness to confirm compiler configurations, execution sandboxing, and output evaluation across all runtimes:
 ```bash
 npm run test:code
 ```
+
 Expected output:
 ```text
 ======================================================
  Starting Judge0 CE Automated Verification Test Suite
  Target Judge0 URL: http://localhost:2358
 ======================================================
-[Test 1] C++ (GCC) Execution with stdin ... ✓ PASSED
-[Test 2] Python Execution with stdin ... ✓ PASSED
-[Test 3] Java Execution with stdin ... ✓ PASSED
-[Test 4] JavaScript (Node.js) Execution ... ✓ PASSED
-[Test 5] C++ Compilation Error Detection ... ✓ PASSED
-[Test 6] Python Runtime Error Detection ... ✓ PASSED
-[Test 7] Python Time Limit Exceeded Detection ... ✓ PASSED
+[Test 1] C++ (GCC) Execution with stdin ... PASSED
+[Test 2] Python Execution with stdin ... PASSED
+[Test 3] Java Execution with stdin ... PASSED
+[Test 4] JavaScript (Node.js) Execution ... PASSED
+[Test 5] C++ Compilation Error Detection ... PASSED
+[Test 6] Python Runtime Error Detection ... PASSED
+[Test 7] Python Time Limit Exceeded Detection ... PASSED
 ------------------------------------------------------
  Test Summary: 7 / 7 tests passed.
 ------------------------------------------------------
 ```
 
----
-
-### 5. Start the Application Server
+### 5. Start Application Gateway
+Start the local Express server:
 ```bash
 npm run dev
 ```
 
-Visit the application in your browser:
-* **Landing Page**: [http://localhost:3000](http://localhost:3000)
-* **Dashboard & Analytics**: [http://localhost:3000/dashboard.html](http://localhost:3000/dashboard.html)
-* **Problem Workspace**: [http://localhost:3000/problems/two-sum](http://localhost:3000/problems/two-sum)
+Application endpoints:
+* Platform Landing Page: `http://localhost:3000`
+* Analytics & Study Dashboard: `http://localhost:3000/dashboard.html`
+* Problem Practice Workspace: `http://localhost:3000/problems/two-sum`
 
 ---
 
-## 🧪 Testing Problem Submissions
+## Verification & Testing
 
-You can submit solutions programmatically or through the Monaco UI. To test the Two Sum problem against hidden judge cases:
+### Submission API Verification
+To programmatically test the full submission loop, token authentication, and hidden test validation:
+```bash
+node scripts/test-phase2-e2e.js
+```
+
+### Manual Test Run
+To test submission directly against the active Judge0 worker with both Java and Python payloads:
 ```bash
 node scripts/test-two-sum-submit.mjs
 ```
 
 ---
 
-## 🛡 Security & Sandboxing
-* **Code Isolation**: All code execution occurs inside ephemeral Docker containers without network access or host file system privileges.
-* **Hidden Test Case Protection**: Hidden test cases and expected outputs are evaluated strictly server-side and never sent to client browsers.
-* **Resource Quotas**: Wall time (5s), CPU limits, and memory limits are enforced at the container boundary to guard against infinite loops and fork bombs.
+## Security Model
+
+* **Runtime Sandboxing**: User-submitted code executes in unprivileged containers with dropped capabilities, non-root user execution, and no outbound host network access.
+* **Process and Resource Quotas**: Hard process constraints enforce a 5-second CPU time ceiling, restricted thread counts, and memory boundaries to prevent denial-of-service via infinite recursion or fork attacks.
+* **Hidden Test Protection**: Production test suites and assertion parameters are isolated within the database tier and evaluated server-side. Clients receive aggregate pass/fail results and execution metrics without exposed test inputs.
+* **Input Sanitization**: Source code and standard input buffers are subject to size limits (64 KB and 32 KB respectively) prior to submission dispatch.
 
 ---
 
-## 📄 License
-This project is open-source under the [MIT License](LICENSE).
+## License
+
+This software is distributed under the MIT License. See [LICENSE](LICENSE) for details.

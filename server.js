@@ -11,7 +11,7 @@ import { executeCodeSubmission, SUPPORTED_LANGUAGES, normalizeOutput, getSupport
 
 const app = express();
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const { MONGODB_URI, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, JWT_SECRET = 'prepflow-local-secret-key-2026', ADMIN_API_KEY = 'prepflow-admin-secret-2026', NODE_ENV = 'development', PORT = 3000 } = process.env;
+const { MONGODB_URI, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, JWT_SECRET = 'acumen-local-secret-key-2026', ADMIN_API_KEY = 'acumen-admin-secret-2026', NODE_ENV = 'development', PORT = 3000 } = process.env;
 
 if (!MONGODB_URI) throw new Error('MONGODB_URI is required. Add it to your .env file.');
 
@@ -89,11 +89,11 @@ function saveLocalSubjects(subjects) {
 app.use(express.json());
 
 function getSessionToken(req) {
-  return (req.headers.cookie || '').split(';').map((entry) => entry.trim()).find((entry) => entry.startsWith('prepflow_token='))?.slice('prepflow_token='.length);
+  return (req.headers.cookie || '').split(';').map((entry) => entry.trim()).find((entry) => entry.startsWith('acumen_token='))?.slice('acumen_token='.length);
 }
 
 function sendAuthCookie(res, accessToken) {
-  res.cookie('prepflow_token', accessToken, {
+  res.cookie('acumen_token', accessToken, {
     httpOnly: true,
     sameSite: 'lax',
     secure: NODE_ENV === 'production',
@@ -274,7 +274,7 @@ app.post('/api/auth/login', async (req, res, next) => {
 });
 
 app.post('/api/auth/logout', (_req, res) => {
-  res.clearCookie('prepflow_token');
+  res.clearCookie('acumen_token');
   res.status(204).end();
 });
 
@@ -478,7 +478,12 @@ async function saveProblem(req, res, next, id) {
     saveLocalProblems(probs);
 
     try {
-      await supabaseAdmin.rpc('prepflow_admin_save_problem_v1', { payload: problem });
+      // Try both rpc function names for database backwards-compatibility
+      try {
+        await supabaseAdmin.rpc('acumen_admin_save_problem_v1', { payload: problem });
+      } catch {
+        await supabaseAdmin.rpc('prepflow_admin_save_problem_v1', { payload: problem });
+      }
     } catch (_) {}
 
     res.status(id ? 200 : 201).json({ id: targetId });
@@ -1354,5 +1359,5 @@ mongoose.connect(MONGODB_URI)
 // Probe Supabase availability once at startup (max 3s wait)
 probeSupabase();
 
-app.listen(PORT, () => console.log(`PrepFlow is running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Acumen is running at http://localhost:${PORT}`));
 
