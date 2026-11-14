@@ -1,8 +1,38 @@
-# Acumen
+<p align="center">
+  <a href="https://github.com/KanwalpreetSingh752/InterviewPrep">
+    <img src="https://img.shields.io/badge/status-active%20development-f59e0b?style=flat-square" alt="Status: active development">
+  </a>
+  <img src="https://img.shields.io/badge/node-%3E%3D18-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js 18 or newer">
+  <img src="https://img.shields.io/badge/express-5.x-000000?style=flat-square&logo=express&logoColor=white" alt="Express 5">
+  <img src="https://img.shields.io/badge/docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker Compose">
+  <img src="https://img.shields.io/badge/mongodb-required-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB required">
+  <img src="https://img.shields.io/badge/redis-7.2.4-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis 7.2.4">
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-F0E442?style=flat-square" alt="MIT License">
+  </a>
+</p>
 
-Acumen is a full-stack interview-preparation platform for learning core computer-science concepts and practicing coding problems in a browser-based workspace. It combines structured study roadmaps, progress and activity analytics, problem authoring, and isolated multi-language code execution.
+<h1 align="center">⚓ Acumen</h1>
 
-> **Status:** Active development. The application is intended for local development and self-hosted environments.
+<p align="center">
+  <strong>Engineering interview preparation — structured learning, coding practice, and sandboxed execution.</strong>
+</p>
+
+<p align="center">
+  Roadmaps · Core computer science · Problem solving · Progress analytics · Multi-language execution
+</p>
+
+<p align="center">
+  <a href="#what-it-provides">Features</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#api-areas">API reference</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#security-considerations">Security</a>
+</p>
+
+<p align="center">
+  <em>Self-hosted and built for focused, measurable interview preparation.</em>
+</p>
 
 ## What it provides
 
