@@ -1,230 +1,232 @@
 # Acumen
 
-Acumen is an engineering interview preparation and computer science education platform. It provides a structured, self-paced study environment for core systems topics alongside a sandboxed, multi-language code execution engine and an activity analytics dashboard.
+Acumen is a full-stack interview-preparation platform for learning core computer-science concepts and practicing coding problems in a browser-based workspace. It combines structured study roadmaps, progress and activity analytics, problem authoring, and isolated multi-language code execution.
 
----
+> **Status:** Active development. The application is intended for local development and self-hosted environments.
 
-## Architecture Overview
+## What it provides
 
+- **Structured learning:** Roadmaps and reading content for operating systems, computer networks, database systems, distributed systems, and related subjects.
+- **Coding practice:** Problem catalog, difficulty and topic metadata, starter code, examples, visible test cases, and hidden test cases.
+- **Browser coding workspace:** Monaco Editor integration with C++, Java, Python, and JavaScript support.
+- **Safe evaluation flow:** Separate `Run` and `Submit` flows, with hidden tests evaluated server-side through Judge0.
+- **Progress and analytics:** Authenticated progress tracking, streaks, activity history, completion metrics, and submission outcomes.
+- **Administrative authoring:** Protected interfaces for managing problems, topics, subjects, headings, and subheadings.
+
+## Architecture
+
+```text
+Browser
+  |
+  v
+Express application
+  |-- Static web client (public/)
+  |-- Authentication and application APIs
+  |-- Supabase synchronization and authorization
+  |-- MongoDB subject-content persistence
+  |
+  `--> Judge0 CE
+         |-- Redis queue
+         |-- PostgreSQL
+         `-- Isolated execution workers
 ```
-                      +-----------------------------------+
-                      |         Web Client                |
-                      |  (Monaco Editor, Modular Views)   |
-                      +-----------------+-----------------+
-                                        | HTTP / JSON
-                                        v
-                      +-----------------+-----------------+
-                      |     Express.js API Gateway        |
-                      |   (Auth, Routing, Rate Limits)    |
-                      +--------+------------------+-------+
-                               |                  |
-           +-------------------+                  +-------------------+
-           v                                                          v
-+----------------------+                                   +-----------------------+
-|  Supabase (Postgres) |                                   | Judge0 CE (Sandbox)   |
-|  - Users & Sessions  |                                   | - Worker Instances    |
-|  - Progress State    |                                   | - Redis Job Queue     |
-|  - Submissions Audit |                                   | - Isolated Runtimes   |
-+----------------------+                                   +-----------------------+
-```
 
-The system comprises three primary layers:
+### Main components
 
-1. **Client Layer**: Modular web interface incorporating Monaco Editor (`0.45.0`), customized with the `acumen-light` color palette, synchronized state, and an SVG-based analytics timeline.
-2. **Application Gateway**: Node.js and Express 5 backend managing authentication tokens, request validation, problem metadata distribution, and evaluation pipelines.
-3. **Execution Sandbox**: Multi-container Judge0 CE deployment running isolated workers against an internal Redis queue with configured time, memory, and thread ceilings.
+| Component | Role |
+| --- | --- |
+| Node.js + Express 5 | Application server, authentication, APIs, and static-file hosting |
+| Vanilla HTML, CSS, and JavaScript | Browser application and administrative interfaces |
+| Supabase | Hosted authentication, profiles, progress, problems, topics, and submissions |
+| MongoDB | Subject-content persistence used by the server |
+| Judge0 CE 1.13.1 | Sandboxed code execution |
+| Redis 7.2.4 | Judge0 job queue |
+| PostgreSQL 16.2 | Judge0 internal database |
+| Monaco Editor | In-browser code editor |
 
----
+## Repository layout
 
-## Core Systems
-
-### 1. Sandboxed Code Execution Engine
-Remote code evaluation is delegated to an isolated Judge0 CE cluster. Source payloads and standard inputs are encoded in Base64 for transport safety, submitted asynchronously, and polled with exponential backoff until completion.
-
-* **Supported Languages**:
-  * C++ (GCC 9.2.0)
-  * Java (OpenJDK 13.0.1)
-  * Python (3.8.1)
-  * JavaScript (Node.js 12.14.0)
-* **JVM Sandbox Tuning**: OpenJDK 13 includes bounded virtual memory reservations (`-XX:MetaspaceSize=32m -XX:MaxMetaspaceSize=64m -Xms32m -Xmx128m -XX:+UseSerialGC`) to avoid virtual memory allocation failures under container process limits.
-* **Evaluation Pipeline**:
-  * **Run**: Compiles and executes code against visible test vectors for immediate debugging.
-  * **Submit**: Runs full validation against hidden database-backed test cases without exposing inputs, expected outputs, or test count metadata to the client.
-
-### 2. User Analytics & Progress Tracking
-The overview dashboard presents verified, database-derived metrics without client-side mock data:
-* **Activity Heatmap**: 52-week by 7-day contribution matrix generated from timestamped submissions and completed modules.
-* **Streak Computation**: Sequential activity tracking calculated from continuous active calendar dates.
-* **Curriculum Completion**: Aggregated progress computed across Operating Systems, Computer Networks, Database Management Systems, and System Design.
-* **Evaluation Accuracy**: Success-to-failure ratio derived from recorded submission outcomes in PostgreSQL.
-
-### 3. Core Computer Science Library
-Designed around conceptual retention rather than algorithmic drilling:
-* Comprehensive notes covering Operating Systems, Networks, DBMS, and Distributed Systems.
-* Algorithmic and architectural trade-off analyses (e.g., CPU scheduling quantum sizing, isolation levels, buffer cache replacement strategies).
-* Independent progress toggling synchronized per authenticated account.
-
----
-
-## Technical Specifications
-
-| Component | Implementation |
-|---|---|
-| Runtime | Node.js (ES Modules, v18+) |
-| HTTP Framework | Express.js 5.x |
-| Database & Identity | PostgreSQL via Supabase, Row-Level Security (RLS) |
-| Remote Code Execution | Judge0 CE v1.13.1 (Docker Compose) |
-| Task Queue (Judge0) | Redis 7.2.4 |
-| Code Editor | Monaco Editor 0.45.0 |
-| Styling & Typography | Vanilla CSS3, Newsreader (Serif), Inter, DM Mono |
-
----
-
-## Project Structure
-
-```
+```text
 .
-├── docker/
-│   └── judge0/
-│       ├── docker-compose.yml       # Judge0 server, workers, Redis, and internal DB
-│       ├── judge0.conf              # Sandbox quotas, network configs, and runtime settings
-│       └── init-java.sql            # Database bootstrap configuring JVM memory constraints
-├── public/
-│   ├── index.html                   # Landing page
-│   ├── dashboard.html               # Main workspace and analytics interface
-│   ├── dashboard.js                 # Workspace orchestration and analytics renderer
-│   ├── mindrift-dashboard.css       # Layout and widget stylesheets
-│   ├── problem.html                 # Coding workspace interface
-│   ├── problem.js                   # Monaco editor integration and evaluation runner
-│   ├── problem.css                  # Dual-pane code layout styles
-│   ├── core-subjects.html           # Systems and architecture reader
-│   ├── dsa.html                     # Algorithm roadmaps
-│   └── admin/                       # Content authoring tools
-├── scripts/
-│   ├── test-code-execution.js       # Automated end-to-end sandbox test suite
-│   ├── test-phase2-e2e.js           # Problem submission verification script
-│   └── run-migration.js             # Schema migration utility
-├── services/
-│   └── judge0.js                    # Judge0 client and output normalization
-├── server.js                        # API Gateway and middleware configuration
-└── package.json                     # Project manifest and command scripts
+├── docker/judge0/             # Judge0, worker, Redis, and PostgreSQL stack
+├── public/                    # Static application pages, scripts, and styles
+│   └── admin/                 # Problem and subject authoring interfaces
+├── scripts/                   # Migration, administration, and verification scripts
+├── services/judge0.js         # Judge0 client, validation, polling, and normalization
+├── supabase/migrations/       # Supabase schema and RLS migrations
+├── local_*.json               # Local fallback content and user data
+├── server.js                  # Express application entry point
+├── package.json               # Scripts and runtime dependencies
+└── LICENSE
 ```
 
----
+## Requirements
 
-## Setup and Deployment
+- Node.js 18 or newer
+- npm
+- MongoDB, reachable through `MONGODB_URI`
+- A Supabase project for cloud-backed authentication and application data
+- Docker Desktop or Docker Engine with Docker Compose v2 for Judge0
 
-### Prerequisites
-* **Node.js**: Version 18.0.0 or higher
-* **Docker Engine & Docker Compose**: v2.0+ (Docker Desktop with WSL2 on Windows, or native Docker on Linux/macOS)
-* **Supabase Project**: Active PostgreSQL instance with migration schemas applied
+## Quick start
 
-### 1. Clone Repository and Install Dependencies
+### 1. Clone and install
+
 ```bash
-git clone https://github.com/<your-organization>/Acumen.git
-cd Acumen
+git clone https://github.com/KanwalpreetSingh752/InterviewPrep.git
+cd InterviewPrep
 npm install
 ```
 
-### 2. Environment Configuration
-Create a `.env` file in the project root:
-```env
-PORT=3000
+### 2. Configure environment variables
+
+Create a local `.env` file. Do not commit it.
+
+```dotenv
 NODE_ENV=development
+PORT=3000
 
-# Supabase Configuration
-SUPABASE_URL=https://<your-project>.supabase.co
-SUPABASE_ANON_KEY=<your-anon-key>
-SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+# Required by the application server
+MONGODB_URI=mongodb://127.0.0.1:27017/acumen
 
-# Judge0 Execution URL
+# Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Code execution
 JUDGE0_URL=http://localhost:2358
 
-# Administration
-ADMIN_API_KEY=your-admin-api-key
+# Use strong, unique values outside local development
+JWT_SECRET=replace-with-a-long-random-secret
+ADMIN_API_KEY=replace-with-a-long-random-secret
+
+# Required by the end-to-end submission test
 TEST_USER_EMAIL=test@example.com
-TEST_USER_PASSWORD=YourSecurePassword123
+TEST_USER_PASSWORD=replace-with-a-test-password
 ```
 
-### 3. Initialize Sandboxed Execution Engine
-Deploy the Judge0 service stack:
+`SUPABASE_SERVICE_ROLE_KEY`, `JWT_SECRET`, and `ADMIN_API_KEY` are sensitive. Keep them server-side and never expose them in client code or commit them to source control.
+
+### 3. Apply Supabase migrations
+
+Run the SQL files in `supabase/migrations/` in your Supabase project's SQL Editor, in filename order:
+
+1. `20260930_problem_authoring.sql`
+2. `20260930_phase2_submissions.sql`
+
+The migrations create the problem-authoring and submission tables, indexes, helper functions, and row-level security policies. They do not seed problems or hidden test cases.
+
+### 4. Start Judge0
+
+From the repository root:
+
 ```bash
 cd docker/judge0
 docker compose up -d
-```
-
-Verify that all service containers are healthy:
-```bash
 docker compose ps
-```
-The stack should list:
-* `judge0-server` (Port 2358)
-* `judge0-workers`
-* `judge0-db` (Postgres)
-* `judge0-redis`
-
-### 4. Execute Sandbox Verification Suite
-Run the test harness to confirm compiler configurations, execution sandboxing, and output evaluation across all runtimes:
-```bash
-npm run test:code
+cd ../..
 ```
 
-Expected output:
-```text
-======================================================
- Starting Judge0 CE Automated Verification Test Suite
- Target Judge0 URL: http://localhost:2358
-======================================================
-[Test 1] C++ (GCC) Execution with stdin ... PASSED
-[Test 2] Python Execution with stdin ... PASSED
-[Test 3] Java Execution with stdin ... PASSED
-[Test 4] JavaScript (Node.js) Execution ... PASSED
-[Test 5] C++ Compilation Error Detection ... PASSED
-[Test 6] Python Runtime Error Detection ... PASSED
-[Test 7] Python Time Limit Exceeded Detection ... PASSED
-------------------------------------------------------
- Test Summary: 7 / 7 tests passed.
-------------------------------------------------------
-```
+Judge0 is exposed locally at `http://localhost:2358`. Confirm that the `server`, `workers`, `db`, and `redis` services are running before testing code execution.
 
-### 5. Start Application Gateway
-Start the local Express server:
+### 5. Start Acumen
+
 ```bash
 npm run dev
 ```
 
-Application endpoints:
-* Platform Landing Page: `http://localhost:3000`
-* Analytics & Study Dashboard: `http://localhost:3000/dashboard.html`
-* Problem Practice Workspace: `http://localhost:3000/problems/two-sum`
+Open [http://localhost:3000](http://localhost:3000).
 
----
+Useful pages include:
 
-## Verification & Testing
+- `/` - landing page
+- `/dashboard.html` - study dashboard and analytics
+- `/core-subjects.html` - core-subject reader
+- `/dsa.html` - algorithm roadmap
+- `/problems/<slug>` - coding workspace
+- `/admin/problems.html` - problem authoring
+- `/admin/subjects.html` - subject authoring
 
-### Submission API Verification
-To programmatically test the full submission loop, token authentication, and hidden test validation:
+## npm scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm start` | Start the application server |
+| `npm run seed` | Synchronize roadmap data using `scripts/run-migration.js` |
+| `npm run test:code` | Verify Judge0 execution across supported languages and failure modes |
+| `npm run test:phase2` | Run the authenticated submission-flow end-to-end test |
+| `npm run grant:problem-admin -- <email>` | Grant problem-authoring access to a Supabase profile |
+
+The end-to-end submission test requires a running application, a reachable Supabase project, seeded problem data, Judge0, and the `TEST_USER_*` variables.
+
+## Supported languages
+
+The application currently exposes these language keys:
+
+| Language | Judge0 runtime |
+| --- | --- |
+| C++ | GCC |
+| Java | OpenJDK |
+| Python | Python |
+| JavaScript | Node.js |
+
+Source code and standard input are validated before dispatch. The Judge0 client enforces bounded payload sizes, polls asynchronously for completion, and normalizes execution results for the application API.
+
+## API areas
+
+The Express server exposes APIs for:
+
+- `/api/auth/*` - registration, login, logout, and current-user lookup
+- `/api/roadmaps`, `/api/progress`, `/api/analytics` - learning state and dashboard data
+- `/api/problems`, `/api/topics` - public problem catalog
+- `/api/problems/:id/run` and `/api/problems/:id/submit` - visible execution and hidden-test submission
+- `/api/problems/:id/submissions` - authenticated submission history
+- `/api/code/languages` and `/api/code/run` - standalone sandbox execution
+- `/api/admin/*` - protected problem, topic, and subject authoring operations
+
+Refer to [`server.js`](server.js) for the authoritative route behavior and validation rules.
+
+## Security considerations
+
+- Run Judge0 in an isolated environment and review its resource limits before exposing it beyond localhost.
+- Keep Supabase service-role credentials, JWT secrets, and administrative keys out of the browser and source control.
+- Hidden test cases are evaluated on the server and should not be returned to clients.
+- Supabase submission data is protected with row-level security policies for authenticated users.
+- Use strong, environment-specific secrets and set `NODE_ENV=production` only with a production-ready deployment configuration.
+- The included Docker Compose file uses privileged Judge0 containers; review the operational and host-isolation implications before production use.
+
+## Troubleshooting
+
+### The server exits immediately
+
+Confirm that `MONGODB_URI` is set and that MongoDB is reachable. The application requires this variable at startup.
+
+### Supabase features are unavailable
+
+Check `SUPABASE_URL` and `SUPABASE_ANON_KEY`, then verify network access from the machine running Node.js. The server can use local fallback files for some development flows, but cloud-backed authentication, progress, and submissions require Supabase.
+
+### Code execution does not complete
+
+Check the Judge0 services and logs:
+
 ```bash
-node scripts/test-phase2-e2e.js
+cd docker/judge0
+docker compose ps
+docker compose logs server workers --tail=100
 ```
 
-### Manual Test Run
-To test submission directly against the active Judge0 worker with both Java and Python payloads:
-```bash
-node scripts/test-two-sum-submit.mjs
-```
+Then confirm that `JUDGE0_URL` matches the address exposed by the Judge0 `server` container.
 
----
+## Contributing
 
-## Security Model
-
-* **Runtime Sandboxing**: User-submitted code executes in unprivileged containers with dropped capabilities, non-root user execution, and no outbound host network access.
-* **Process and Resource Quotas**: Hard process constraints enforce a 5-second CPU time ceiling, restricted thread counts, and memory boundaries to prevent denial-of-service via infinite recursion or fork attacks.
-* **Hidden Test Protection**: Production test suites and assertion parameters are isolated within the database tier and evaluated server-side. Clients receive aggregate pass/fail results and execution metrics without exposed test inputs.
-* **Input Sanitization**: Source code and standard input buffers are subject to size limits (64 KB and 32 KB respectively) prior to submission dispatch.
-
----
+1. Create a focused branch.
+2. Keep credentials and local data out of commits.
+3. Make the smallest change that addresses the issue.
+4. Run the relevant verification script before opening a pull request.
+5. Document user-visible or operational changes.
 
 ## License
 
-This software is distributed under the MIT License. See [LICENSE](LICENSE) for details.
+Acumen is available under the [MIT License](LICENSE).
